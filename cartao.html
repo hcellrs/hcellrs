@@ -54,7 +54,30 @@
     .btn.instagram { background: #E4405F; }
     .btn.google { background: #FFB300; }
     .btn.maps { background: #4285F4; }
-    .btn.voltar { background: #34495e; } /* Cor diferente para voltar */
+    .btn.voltar { background: #34495e; }
+
+    /* Botão flutuante */
+    .btn-float {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: #34495e;
+        color: #fff;
+        padding: 12px 16px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        z-index: 1000;
+        transition: 0.3s;
+    }
+    .btn-float i {
+        margin-right: 6px;
+    }
+    .btn-float:hover {
+        opacity: 0.85;
+    }
+
     footer {
         font-size: 12px;
         margin-top: 20px;
@@ -85,14 +108,19 @@
         <i class="fas fa-map-marker-alt"></i> Ver no Google Maps
     </a>
 
-    <!-- Botão de voltar ao Index -->
+    <!-- Botão dentro do card -->
     <a href="index.html" class="btn voltar">
         <i class="fas fa-arrow-left"></i> Voltar ao Início
     </a>
 </div>
 
+<!-- Botão flutuante -->
+<a href="index.html" class="btn-float">
+    <i class="fas fa-arrow-left"></i> Início
+</a>
+
 <footer>
-    © 2025 HCELL Celulares e Acessórios
+    © 2025 HCELL Celulares e Acessórios. Todos os direitos reservados.
 </footer>
 
 </body>
