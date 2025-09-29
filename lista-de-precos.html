@@ -1,77 +1,129 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Produtos - Lidercell</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input { padding: 8px; width: 300px; }
-    button { padding: 8px 12px; margin-left: 8px; cursor: pointer; }
-    #resultado { margin-top: 20px; font-weight: bold; white-space: pre-wrap; }
-  </style>
-</head>
-<body>
-  <h2>Consultar Produto</h2>
-  <input type="text" id="busca" placeholder="Digite o nome do produto">
-  <button onclick="procurar()">Buscar</button>
-  <div id="resultado"></div>
+	<!DOCTYPE html>
+	<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Tabela de Preços - HCELL</title>
+		
+		<link rel="icon" type="image/x-icon" href="images/favicon.png">
 
-  <script>
-    let produtos = [];
+		<link rel="stylesheet" href="style.css"> 
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f0f2f5;
+				padding: 20px;
+				color: #333;
+			}
+			.container {
+				max-width: 600px;
+				margin: 0 auto;
+				background-color: #ffffff;
+				padding: 20px;
+				border-radius: 8px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			h1 {
+				text-align: center;
+				color: #1a73e8;
+				margin-bottom: 20px;
+			}
+			#searchInput {
+				width: 100%;
+				padding: 12px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				font-size: 16px;
+				box-sizing: border-box;
+				margin-bottom: 20px;
+			}
+			#resultados {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.produto-item {
+				padding: 15px;
+				border-bottom: 1px solid #eee;
+				transition: background-color 0.2s ease;
+			}
+			.produto-item:last-child {
+				border-bottom: none;
+			}
+			.produto-item:hover {
+				background-color: #f9f9f9;
+			}
+			.produto-modelo {
+				font-weight: bold;
+				font-size: 18px;
+				color: #333;
+				margin-bottom: 5px;
+			}
+			.produto-valor {
+				font-size: 16px;
+				color: #555;
+				margin: 5px 0;
+			}
+			.sem-resultados {
+				text-align: center;
+				color: #888;
+				font-style: italic;
+				padding: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<a href="index.html" class="btn btn-primary" style="margin: 20px;">
+			<i class="fas fa-arrow-left" aria-hidden="true"></i>
+			Voltar para o Início
+		</a>
+		
+		<h1>Tabela de Preços</h1>
+		<div class="container">
+			<h1>Consulta de Preços de Produtos</h1>
+			<input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
+			<div id="resultados">
+				<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
+			</div>
+		</div>
+		<script>
+			const produtos = [
+				
+				
+			];
 
-    // URL do CSV publicado da sua planilha
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?gid=0&single=true&output=csv";
+			const searchInput = document.getElementById('searchInput');
+			const resultadosDiv = document.getElementById('resultados');
 
-    // Função para converter CSV para JSON
-    function csvParaJson(csvText) {
-      const linhas = csvText.trim().split("\n");
-      const cabecalhos = linhas[0].split(",").map(h => h.trim());
-      const resultado = [];
+			const displayResults = (results) => {
+				resultadosDiv.innerHTML = '';
+				if (results.length > 0) {
+					results.forEach(produto => {
+						const produtoItem = document.createElement('div');
+						produtoItem.className = 'produto-item';
+						produtoItem.innerHTML = `
+							<div class="produto-modelo">${produto.modelo}</div>
+							<div class="produto-valor">Preço de venda = ${produto.preco_venda}</div>
+							<div class="produto-valor">Desconto Avista = ${produto.desconto_avista}</div>
+						`;
+						resultadosDiv.appendChild(produtoItem);
+					});
+				} else {
+					resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
+				}
+			};
 
-      for (let i = 1; i < linhas.length; i++) {
-        const linha = linhas[i].split(",").map(c => c.trim());
-        if (linha.length === cabecalhos.length) {
-          const obj = {};
-          for (let j = 0; j < cabecalhos.length; j++) {
-            obj[cabecalhos[j]] = linha[j];
-          }
-          resultado.push(obj);
-        }
-      }
-      return resultado;
-    }
-
-    // Carregar o CSV, converter, armazenar em produtos
-    fetch(csvUrl)
-      .then(response => response.text())
-      .then(csvText => {
-        produtos = csvParaJson(csvText);
-        console.log("Produtos carregados:", produtos);
-      })
-      .catch(err => {
-        console.error("Erro ao carregar CSV:", err);
-      });
-
-    function procurar() {
-      const termo = document.getElementById("busca").value.trim().toLowerCase();
-      const resultadoDiv = document.getElementById("resultado");
-
-      if (!termo) {
-        resultadoDiv.textContent = "Digite o nome de um produto para buscar.";
-        return;
-      }
-
-      const produtoEncontrado = produtos.find(p => 
-        p.Produtos && p.Produtos.toLowerCase().includes(termo)
-      );
-
-      if (produtoEncontrado) {
-        resultadoDiv.textContent = `{"modelo": "${produtoEncontrado.Produtos} R$ ${produtoEncontrado.Valor}"},`;
-      } else {
-        resultadoDiv.textContent = "Nenhum produto encontrado.";
-      }
-    }
-  </script>
+			searchInput.addEventListener('input', (e) => {
+				const searchTerm = e.target.value.toLowerCase();
+				if (searchTerm.length > 0) {
+					const filteredProducts = produtos.filter(produto => 
+						produto.modelo.toLowerCase().includes(searchTerm)
+					);
+					displayResults(filteredProducts);
+				} else {
+					resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
+				}
+			});
+		</script>
 </body>
 </html>
