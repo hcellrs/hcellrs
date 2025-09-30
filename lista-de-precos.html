@@ -1,126 +1,153 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tabela de Preços - HCELL</title>
-  
   <link rel="icon" type="image/x-icon" href="images/favicon.png">
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #1a73e8;
-      margin-bottom: 20px;
-    }
-    #searchInput {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-      box-sizing: border-box;
-      margin-bottom: 20px;
-    }
-    #resultados {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .produto-item {
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      transition: background-color 0.2s ease;
-    }
-    .produto-item:last-child {
-      border-bottom: none;
-    }
-    .produto-item:hover {
-      background-color: #f9f9f9;
-    }
-    .produto-modelo {
-      font-weight: bold;
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 5px;
-    }
-    .produto-valor {
-      font-size: 16px;
-      color: #555;
-      margin: 5px 0;
-    }
-    .sem-resultados {
-      text-align: center;
-      color: #888;
-      font-style: italic;
-      padding: 20px;
-    }
+    body { font-family: Arial, sans-serif; background-color: #f0f2f5; padding: 20px; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+    h1 { text-align: center; color: #1a73e8; margin-bottom: 20px; }
+    #searchInput { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; box-sizing: border-box; margin-bottom: 20px; }
+    #resultados { list-style: none; padding: 0; margin: 0; }
+    .produto-item { padding: 15px; border-bottom: 1px solid #eee; transition: background-color .2s ease; }
+    .produto-item:last-child { border-bottom: none; }
+    .produto-item:hover { background-color: #f9f9f9; }
+    .produto-modelo { font-weight: bold; font-size: 18px; color: #333; margin-bottom: 5px; }
+    .produto-valor { font-size: 16px; color: #555; margin: 5px 0; }
+    .sem-resultados { text-align: center; color: #888; font-style: italic; padding: 20px; }
   </style>
 </head>
 <body>
   <a href="index.html" class="btn btn-primary" style="margin: 20px;">
-    <i class="fas fa-arrow-left" aria-hidden="true"></i>
     Voltar para o Início
   </a>
-  
+
   <h1>Tabela de Preços</h1>
   <div class="container">
     <h1>Consulta de Preços de Produtos</h1>
     <input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
     <div id="resultados">
-      <p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
+      <p class="sem-resultados">Carregando produtos...</p>
     </div>
   </div>
 
   <script>
-    // 🔗 Link direto da sua planilha publicada
+    // URL da sua planilha publicada (CSV)
     const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?gid=0&single=true&output=csv";
 
+    const resultadosDiv = document.getElementById('resultados');
+    const searchInput = document.getElementById('searchInput');
     let produtos = [];
 
-    // Função para carregar dados do Google Sheets
+    // parser simples que respeita campos entre aspas (para lidar com vírgulas dentro do texto)
+    function parseCSVLine(line) {
+      const fields = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i+1] === '"') { cur += '"'; i++; } 
+          else { inQuotes = !inQuotes; }
+        } else if (ch === ',' && !inQuotes) {
+          fields.push(cur);
+          cur = '';
+        } else {
+          cur += ch;
+        }
+      }
+      fields.push(cur);
+      return fields;
+    }
+
+    // tenta extrair número mesmo se tiver "R$" ou espaços, remove milhares e ajusta decimal
+    function parsePriceNumber(raw) {
+      if (!raw && raw !== 0) return NaN;
+      let s = String(raw).trim();
+      s = s.replace(/\u00A0/g,''); // non-breaking space
+      // remove tudo que não for dígito, ponto ou vírgula ou sinal negativo
+      s = s.replace(/[^\d\.,-]/g, '');
+      if (!s) return NaN;
+      // se tem ponto e vírgula assume '.' milhares e ',' decimal
+      if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) {
+        s = s.replace(/\./g, '').replace(',', '.');
+      } else {
+        // caso só vírgula, troca por ponto
+        s = s.replace(',', '.');
+      }
+      const n = parseFloat(s);
+      return isFinite(n) ? n : NaN;
+    }
+
+    function formatBRL(value) {
+      if (isNaN(value)) return '';
+      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function displayResults(list) {
+      resultadosDiv.innerHTML = '';
+      if (!list || list.length === 0) {
+        resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado.</p>';
+        return;
+      }
+      list.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'produto-item';
+        div.innerHTML = `
+          <div class="produto-modelo">${p.modelo}</div>
+          <div class="produto-valor">${p.preco_venda}</div>
+        `;
+        resultadosDiv.appendChild(div);
+      });
+    }
+
     async function carregarProdutos() {
       try {
-        const response = await fetch(url);
-        const csv = await response.text();
-        const linhas = csv.split("\n").slice(1); // ignora cabeçalho
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Resposta inválida: ' + resp.status);
+        const csv = await resp.text();
 
-        produtos = linhas.map(linha => {
-          const colunas = linha.split(",");
-          return {
-            modelo: colunas[0]?.trim() || "",
-            preco_venda: formatarPreco(colunas[1])
-          };
-        });
+        // divide em linhas preservando conteúdo; remove linhas vazias no final
+        const linhas = csv.split(/\r?\n/).filter(l => l.trim() !== '');
+        const parsed = [];
 
-        console.log("Produtos carregados:", produtos);
-      } catch (error) {
-        console.error("Erro ao carregar planilha:", error);
+        for (let i = 0; i < linhas.length; i++) {
+          const cols = parseCSVLine(linhas[i]);
+          // normaliza: remove aspas externas se houver
+          const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1');
+          const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1');
+
+          // pular linhas sem produto
+          if (!c0 && !c1) continue;
+
+          const num = parsePriceNumber(c1);
+          // se não conseguiu transformar em número e a célula é claramente cabeçalho ("produto","preco"), pule
+          const headerLike = /^(produto|modelo|preco|valor|price|item)/i;
+          if (isNaN(num) && headerLike.test(c1)) continue;
+          if (isNaN(num) && headerLike.test(c0)) continue;
+
+          const precoFormatado = isNaN(num) ? (c1 || '') : formatBRL(num);
+
+          parsed.push({ modelo: c0, preco_venda: precoFormatado });
+        }
+
+        produtos = parsed;
+        // mostrar todos os produtos inicialmente
+        displayResults(produtos);
+        console.log('Produtos carregados:', produtos);
+      } catch (err) {
+        console.error('Erro ao carregar CSV:', err);
+        resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha. Veja console para detalhes.</p>';
       }
     }
 
-    // Função para formatar preço no padrão brasileiro
-    function formatarPreco(valor) {
-      if (!valor) return "";
-      let numero = parseFloat(valor.replace(",", "."));
-      if (isNaN(numero)) return valor;
-      return numero.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    }
-
-    // Exibir resultados
-    const searchInput = document.getElementById('searchInput');
-    const resultadosDiv = docu
+    // busca em tempo real (filtra por modelo)
+    searchInput.addEventListener('input', (e) => {
+      const term = e.target.value.trim().toLowerCase();
+      if (!term) {
+        displayResults(produtos);
+        return;
+      }
+      const filtered = produtos.filter(p => p.model
