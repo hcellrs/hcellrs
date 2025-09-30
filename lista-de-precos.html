@@ -91,10 +91,10 @@
 		const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?output=csv";
 
 		// 🔧 Percentual de desconto configurável (ex.: 0.10 = 10%)
-		const descontoPercentual = 0.10;
+		//const descontoPercentual = 0.10;
 
 		// Exibir desconto na tela
-		document.getElementById("desconto-info").innerText = 
+		//document.getElementById("desconto-info").innerText = 
 			`💰 Desconto à vista (${(descontoPercentual * 100).toFixed(0)}%) aplicado automaticamente nos preços.`;
 
 		let produtos = [];
@@ -151,7 +151,7 @@
 					produtoItem.innerHTML = `
 						<div class="produto-modelo">${produto.modelo}</div>
 						<div class="produto-valor">Preço de venda = ${produto.preco_venda}</div>
-						<div class="produto-valor">Desconto à vista (${(descontoPercentual * 100).toFixed(0)}%) = ${produto.desconto_avista}</div>
+						//<div class="produto-valor">Desconto à vista (${(descontoPercentual * 100).toFixed(0)}%) = ${produto.desconto_avista}</div>
 					`;
 					resultadosDiv.appendChild(produtoItem);
 				});
@@ -187,12 +187,12 @@
 
 					const num = parsePriceNumber(c1);
 					const precoVenda = isNaN(num) ? (c1 || '') : formatBRL(num);
-					const descontoAvista = isNaN(num) ? '' : formatBRL(num * (1 - descontoPercentual));
+					//const descontoAvista = isNaN(num) ? '' : formatBRL(num * (1 - descontoPercentual));
 
 					parsed.push({
 						modelo: c0,
 						preco_venda: precoVenda,
-						desconto_avista: descontoAvista
+						//desconto_avista: descontoAvista
 					});
 				}
 
@@ -222,3 +222,4 @@
 	</script>
 </body>
 </html>
+
