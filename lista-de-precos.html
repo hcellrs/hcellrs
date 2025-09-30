@@ -1,129 +1,127 @@
-	<!DOCTYPE html>
-	<html lang="pt-BR">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Tabela de Preços - HCELL</title>
-		
-		<link rel="icon" type="image/x-icon" href="images/favicon.png">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Preços - HCELL</title>
+  
+  <link rel="icon" type="image/x-icon" href="images/favicon.png">
 
-		<link rel="stylesheet" href="style.css"> 
-		<style>
-			body {
-				font-family: Arial, sans-serif;
-				background-color: #f0f2f5;
-				padding: 20px;
-				color: #333;
-			}
-			.container {
-				max-width: 600px;
-				margin: 0 auto;
-				background-color: #ffffff;
-				padding: 20px;
-				border-radius: 8px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			}
-			h1 {
-				text-align: center;
-				color: #1a73e8;
-				margin-bottom: 20px;
-			}
-			#searchInput {
-				width: 100%;
-				padding: 12px;
-				border: 1px solid #ddd;
-				border-radius: 4px;
-				font-size: 16px;
-				box-sizing: border-box;
-				margin-bottom: 20px;
-			}
-			#resultados {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
-			.produto-item {
-				padding: 15px;
-				border-bottom: 1px solid #eee;
-				transition: background-color 0.2s ease;
-			}
-			.produto-item:last-child {
-				border-bottom: none;
-			}
-			.produto-item:hover {
-				background-color: #f9f9f9;
-			}
-			.produto-modelo {
-				font-weight: bold;
-				font-size: 18px;
-				color: #333;
-				margin-bottom: 5px;
-			}
-			.produto-valor {
-				font-size: 16px;
-				color: #555;
-				margin: 5px 0;
-			}
-			.sem-resultados {
-				text-align: center;
-				color: #888;
-				font-style: italic;
-				padding: 20px;
-			}
-		</style>
-	</head>
-	<body>
-		<a href="index.html" class="btn btn-primary" style="margin: 20px;">
-			<i class="fas fa-arrow-left" aria-hidden="true"></i>
-			Voltar para o Início
-		</a>
-		
-		<h1>Tabela de Preços</h1>
-		<div class="container">
-			<h1>Consulta de Preços de Produtos</h1>
-			<input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
-			<div id="resultados">
-				<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
-			</div>
-		</div>
-		<script>
-			const produtos = [
-				
-				
-			];
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #1a73e8;
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+    #resultados {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .produto-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s ease;
+    }
+    .produto-item:last-child {
+      border-bottom: none;
+    }
+    .produto-item:hover {
+      background-color: #f9f9f9;
+    }
+    .produto-modelo {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .produto-valor {
+      font-size: 16px;
+      color: #555;
+      margin: 5px 0;
+    }
+    .sem-resultados {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="btn btn-primary" style="margin: 20px;">
+    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    Voltar para o Início
+  </a>
+  
+  <h1>Tabela de Preços</h1>
+  <div class="container">
+    <h1>Consulta de Preços de Produtos</h1>
+    <input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
+    <div id="resultados">
+      <p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
+    </div>
+  </div>
 
-			const searchInput = document.getElementById('searchInput');
-			const resultadosDiv = document.getElementById('resultados');
+  <script>
+    // 🔗 Link direto da sua planilha publicada
+    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?gid=0&single=true&output=csv";
 
-			const displayResults = (results) => {
-				resultadosDiv.innerHTML = '';
-				if (results.length > 0) {
-					results.forEach(produto => {
-						const produtoItem = document.createElement('div');
-						produtoItem.className = 'produto-item';
-						produtoItem.innerHTML = `
-							<div class="produto-modelo">${produto.modelo}</div>
-							<div class="produto-valor">Preço de venda = ${produto.preco_venda}</div>
-							<div class="produto-valor">Desconto Avista = ${produto.desconto_avista}</div>
-						`;
-						resultadosDiv.appendChild(produtoItem);
-					});
-				} else {
-					resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
-				}
-			};
+    let produtos = [];
 
-			searchInput.addEventListener('input', (e) => {
-				const searchTerm = e.target.value.toLowerCase();
-				if (searchTerm.length > 0) {
-					const filteredProducts = produtos.filter(produto => 
-						produto.modelo.toLowerCase().includes(searchTerm)
-					);
-					displayResults(filteredProducts);
-				} else {
-					resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
-				}
-			});
-		</script>
-</body>
-</html>
+    // Função para carregar dados do Google Sheets
+    async function carregarProdutos() {
+      try {
+        const response = await fetch(url);
+        const csv = await response.text();
+        const linhas = csv.split("\n").slice(1); // ignora cabeçalho
+
+        produtos = linhas.map(linha => {
+          const colunas = linha.split(",");
+          return {
+            modelo: colunas[0]?.trim() || "",
+            preco_venda: colunas[1]?.trim() || ""
+          };
+        });
+
+        console.log("Produtos carregados:", produtos);
+      } catch (error) {
+        console.error("Erro ao carregar planilha:", error);
+      }
+    }
+
+    // Exibir resultados
+    const searchInput = document.getElementById('searchInput');
+    const resultadosDiv = document.getElementById('resultados');
+
+    const displayResults = (results) => {
+      resultadosDiv.innerHTML = '';
+      if (results.length > 0) {
+        results.forEach(produto => {
+          const produtoItem = document.createElement('div');
+          produtoItem.className = 'produto-item';
+          produtoItem.innerHTML = `
+            <div class="produto-modelo">${produto.modelo}</div
