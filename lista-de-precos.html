@@ -103,7 +103,7 @@
           const colunas = linha.split(",");
           return {
             modelo: colunas[0]?.trim() || "",
-            preco_venda: colunas[1]?.trim() || ""
+            preco_venda: formatarPreco(colunas[1])
           };
         });
 
@@ -113,15 +113,14 @@
       }
     }
 
+    // Função para formatar preço no padrão brasileiro
+    function formatarPreco(valor) {
+      if (!valor) return "";
+      let numero = parseFloat(valor.replace(",", "."));
+      if (isNaN(numero)) return valor;
+      return numero.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
     // Exibir resultados
     const searchInput = document.getElementById('searchInput');
-    const resultadosDiv = document.getElementById('resultados');
-
-    const displayResults = (results) => {
-      resultadosDiv.innerHTML = '';
-      if (results.length > 0) {
-        results.forEach(produto => {
-          const produtoItem = document.createElement('div');
-          produtoItem.className = 'produto-item';
-          produtoItem.innerHTML = `
-            <div class="produto-modelo">${produto.modelo}</div
+    const resultadosDiv = docu
