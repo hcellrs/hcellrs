@@ -62,10 +62,15 @@
 			font-style: italic;
 			padding: 20px;
 		}
-		/* preço destacado em verde */
+		.preco {
+   			 color: #28a745;   /* verde igual ao botão */
+   			 font-weight: bold;
+   			 font-size: 18px;  /* tamanho maior para destaque */
+		}		
+		<!-- /* preço destacado em verde */
 		.preco {
 			color: #28a745; /* mesmo verde do botão Bootstrap "success" */
-		}
+		}-->
 	</style>
 </head>
 <body>
@@ -138,8 +143,8 @@
 					const produtoItem = document.createElement('div');
 					produtoItem.className = 'produto-item';
 					produtoItem.innerHTML = `
-						📌 ${produto.modelo} <span class="preco">${produto.preco_venda}</span>
-					`;
+						  📌 ${produto.modelo} <span class="preco">${produto.preco_venda}</span>
+					`;		
 					resultadosDiv.appendChild(produtoItem);
 				});
 			} else {
@@ -207,3 +212,4 @@
 	</script>
 </body>
 </html>
+
