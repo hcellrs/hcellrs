@@ -46,9 +46,6 @@
 			padding: 15px;
 			border-bottom: 1px solid #eee;
 			transition: background-color 0.2s ease;
-			font-size: 18px;
-			font-weight: bold;
-			color: #333;
 		}
 		.produto-item:last-child {
 			border-bottom: none;
@@ -62,15 +59,12 @@
 			font-style: italic;
 			padding: 20px;
 		}
+		/* só o valor em verde */
 		.preco {
-   			 color: #28a745;   /* verde igual ao botão */
-   			 font-weight: bold;
-   			 font-size: 18px;  /* tamanho maior para destaque */
-		}		
-		<!-- /* preço destacado em verde */
-		.preco {
-			color: #28a745; /* mesmo verde do botão Bootstrap "success" */
-		}-->
+			color: #28a745;
+			font-weight: bold;
+			font-size: 18px;
+		}
 	</style>
 </head>
 <body>
@@ -87,6 +81,7 @@
 			<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
 		</div>
 	</div>
+
 	<script>
 		// URL da planilha publicada (CSV)
 		const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?output=csv";
@@ -143,8 +138,11 @@
 					const produtoItem = document.createElement('div');
 					produtoItem.className = 'produto-item';
 					produtoItem.innerHTML = `
-						  📌 ${produto.modelo} <span class="preco">${produto.preco_venda}</span>
-					`;		
+						📌 ${produto.modelo}<br>
+						Lidercell: <span class="preco">${produto.lidercell || '-'}</span><br>
+						Eletrocell: <span class="preco">${produto.eletrocell || '-'}</span><br>
+						Nova Peças: <span class="preco">${produto.novapecas || '-'}</span>
+					`;
 					resultadosDiv.appendChild(produtoItem);
 				});
 			} else {
@@ -165,24 +163,29 @@
 
 				let startIndex = 0;
 				const firstCols = parseCSVLine(linhas[0]).map(c => (c||'').toString().toLowerCase());
-				if (firstCols.some(c => /produto|modelo|preco|valor/.test(c))) {
+				if (firstCols.some(c => /produto|modelo|preco|valor|lidercell|eletrocell|nova/.test(c))) {
 					startIndex = 1;
 				}
 
 				const parsed = [];
 				for (let i = startIndex; i < linhas.length; i++) {
 					const cols = parseCSVLine(linhas[i]);
-					const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1');
-					const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1');
+					const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1'); // Produto
+					const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1'); // Lidercell
+					const c2 = (cols[2] || '').trim().replace(/^"(.*)"$/,'$1'); // Eletrocell
+					const c3 = (cols[3] || '').trim().replace(/^"(.*)"$/,'$1'); // Nova Peças
 
-					if (!c0 && !c1) continue;
+					if (!c0 && !c1 && !c2 && !c3) continue;
 
-					const num = parsePriceNumber(c1);
-					const precoVenda = isNaN(num) ? (c1 || '') : formatBRL(num);
+					const precoLider = formatBRL(parsePriceNumber(c1));
+					const precoEletro = formatBRL(parsePriceNumber(c2));
+					const precoNova = formatBRL(parsePriceNumber(c3));
 
 					parsed.push({
 						modelo: c0,
-						preco_venda: precoVenda
+						lidercell: precoLider,
+						eletrocell: precoEletro,
+						novapecas: precoNova
 					});
 				}
 
@@ -212,4 +215,3 @@
 	</script>
 </body>
 </html>
-
