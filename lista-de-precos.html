@@ -1,208 +1,276 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Tabela de Preços - HCELL</title>
-	
-	<link rel="icon" type="image/x-icon" href="images/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Preços - HCELL</title>
 
-	<link rel="stylesheet" href="style.css"> 
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f0f2f5;
-			padding: 20px;
-			color: #333;
-		}
-		.container {
-			max-width: 600px;
-			margin: 0 auto;
-			background-color: #ffffff;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		}
-		h1 {
-			text-align: center;
-			color: #1a73e8;
-			margin-bottom: 20px;
-		}
-		#searchInput {
-			width: 100%;
-			padding: 12px;
-			border: 1px solid #ddd;
-			border-radius: 4px;
-			font-size: 16px;
-			box-sizing: border-box;
-			margin-bottom: 20px;
-		}
-		#resultados {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-		.produto-item {
-			padding: 15px;
-			border-bottom: 1px solid #eee;
-			transition: background-color 0.2s ease;
-		}
-		.produto-item:last-child {
-			border-bottom: none;
-		}
-		.produto-item:hover {
-			background-color: #f9f9f9;
-		}
-		.sem-resultados {
-			text-align: center;
-			color: #888;
-			font-style: italic;
-			padding: 20px;
-		}
-		/* apenas o valor em verde */
-		.preco {
-			color: #28a745;
-			font-weight: bold;
-			font-size: 18px;
-		}
-	</style>
+  <link rel="icon" type="image/x-icon" href="images/favicon.png">
+  <link rel="stylesheet" href="style.css"> 
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #1a73e8;
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+    #resultados {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .produto-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s ease;
+    }
+    .produto-item:last-child {
+      border-bottom: none;
+    }
+    .produto-item:hover {
+      background-color: #f9f9f9;
+    }
+    .produto-modelo {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .produto-valor {
+      font-size: 16px;
+      color: green;
+      margin: 5px 0;
+    }
+    .sem-resultados {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 20px;
+    }
+    .btn-voltar {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-bottom: 15px;
+    }
+    .fornecedor-section {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .fornecedor-section h2 {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .btn-fornecedor {
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+      margin-right: 10px;
+      font-weight: bold;
+      transition: transform 0.1s ease-in-out, box-shadow 0.1s;
+    }
+    .btn-fornecedor:hover {
+      transform: scale(1.05);
+    }
+    .btn-lider {
+      background-color: #FFD633; /* amarelo */
+      color: #333;
+    }
+    .btn-gold {
+      background-color: #DAA520; /* dourado */
+      color: #fff;
+    }
+    .btn-fornecedor.active {
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-	<a href="index.html" class="btn btn-primary" style="margin: 20px;">
-		<i class="fas fa-arrow-left" aria-hidden="true"></i>
-		Voltar para o Início
-	</a>
-	
-	<h1>Tabela de Preços</h1>
-	<div class="container">
-		<h1>Consulta de Preços de Produtos</h1>
-		<input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
-		<div id="resultados">
-			<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
-		</div>
-	</div>
+  <a href="index.html" class="btn-voltar">⬅️ Voltar para o Início</a>
+  
+  <h1>Tabela de Preços</h1>
 
-	<script>
-		// URL da planilha publicada (CSV)
-		const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?output=csv";
+  <div class="container">
+    <div class="fornecedor-section">
+      <h2>Selecione o fornecedor</h2>
+      <button class="btn-fornecedor btn-lider active" id="btnLider">Lidercell</button>
+      <button class="btn-fornecedor btn-gold" id="btnGold">GoldCell</button>
+    </div>
 
-		let produtos = [];
+    <input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
+    <div id="resultados">
+      <p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
+    </div>
+  </div>
 
-		const searchInput = document.getElementById('searchInput');
-		const resultadosDiv = document.getElementById('resultados');
+  <script>
+    const urlLider = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?output=csv";
+    const urlGold = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0GfwlmUazjTIO8LDmn9XMnThhgbKdlqwFgHHvO4oCzUNPlebYbRjZRhv2iCRujK37P4KklsitoS--/pub?gid=0&single=true&output=csv";
+    
+    let produtos = [];
+    let currentUrl = urlLider;
 
-		function parseCSVLine(line) {
-			const fields = [];
-			let cur = '';
-			let inQuotes = false;
-			for (let i = 0; i < line.length; i++) {
-				const ch = line[i];
-				if (ch === '"') {
-					if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
-					else { inQuotes = !inQuotes; }
-				} else if (ch === ',' && !inQuotes) {
-					fields.push(cur);
-					cur = '';
-				} else {
-					cur += ch;
-				}
-			}
-			fields.push(cur);
-			return fields;
-		}
+    const searchInput = document.getElementById('searchInput');
+    const resultadosDiv = document.getElementById('resultados');
+    const btnLider = document.getElementById('btnLider');
+    const btnGold = document.getElementById('btnGold');
 
-		function parsePriceNumber(raw) {
-			if (!raw) return NaN;
-			let s = String(raw).trim();
-			s = s.replace(/\u00A0/g,''); 
-			s = s.replace(/[^\d\.,-]/g, '');
-			if (!s) return NaN;
-			if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) {
-				s = s.replace(/\./g, '').replace(',', '.');
-			} else {
-				s = s.replace(',', '.');
-			}
-			const n = parseFloat(s);
-			return isFinite(n) ? n : NaN;
-		}
+    btnLider.addEventListener('click', () => {
+      currentUrl = urlLider;
+      btnLider.classList.add('active');
+      btnGold.classList.remove('active');
+      carregarProdutos();
+    });
 
-		function formatBRL(value) {
-			if (isNaN(value)) return '';
-			return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-		}
+    btnGold.addEventListener('click', () => {
+      currentUrl = urlGold;
+      btnGold.classList.add('active');
+      btnLider.classList.remove('active');
+      carregarProdutos();
+    });
 
-		const displayResults = (results) => {
-			resultadosDiv.innerHTML = '';
-			if (results.length > 0) {
-				results.forEach(produto => {
-					const produtoItem = document.createElement('div');
-					produtoItem.className = 'produto-item';
-					produtoItem.innerHTML = `
-						📌 ${produto.modelo} <span class="preco">${produto.lidercell || '-'}</span>
-					`;
-					resultadosDiv.appendChild(produtoItem);
-				});
-			} else {
-				resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
-			}
-		};
+    function parseCSVLine(line) {
+      const fields = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (ch === ',' && !inQuotes) {
+          fields.push(cur);
+          cur = '';
+        } else {
+          cur += ch;
+        }
+      }
+      fields.push(cur);
+      return fields;
+    }
 
-		async function carregarProdutos() {
-			try {
-				const resp = await fetch(url);
-				if (!resp.ok) throw new Error('Erro ao buscar CSV: ' + resp.status);
-				const csv = await resp.text();
-				const linhas = csv.split(/\r?\n/).filter(l => l.trim() !== '');
-				if (linhas.length === 0) {
-					resultadosDiv.innerHTML = '<p class="sem-resultados">Planilha vazia.</p>';
-					return;
-				}
+    function parsePriceNumber(raw) {
+      if (!raw) return NaN;
+      let s = String(raw).trim();
+      s = s.replace(/\u00A0/g,''); 
+      s = s.replace(/[^\d\.,-]/g, '');
+      if (!s) return NaN;
+      if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) {
+        s = s.replace(/\./g, '').replace(',', '.');
+      } else {
+        s = s.replace(',', '.');
+      }
+      const n = parseFloat(s);
+      return isFinite(n) ? n : NaN;
+    }
 
-				let startIndex = 0;
-				const firstCols = parseCSVLine(linhas[0]).map(c => (c||'').toString().toLowerCase());
-				if (firstCols.some(c => /produto|modelo|lidercell|valor/.test(c))) {
-					startIndex = 1;
-				}
+    function formatBRL(value) {
+      if (isNaN(value)) return '';
+      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
 
-				const parsed = [];
-				for (let i = startIndex; i < linhas.length; i++) {
-					const cols = parseCSVLine(linhas[i]);
-					const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1'); // Produto
-					const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1'); // Lidercell
+    const displayResults = (results) => {
+      resultadosDiv.innerHTML = '';
+      if (results.length > 0) {
+        results.forEach(produto => {
+          const produtoItem = document.createElement('div');
+          produtoItem.className = 'produto-item';
+          produtoItem.innerHTML = `
+            <div class="produto-modelo">📌 ${produto.modelo} <span class="produto-valor">${produto.preco_venda}</span></div>
+          `;
+          resultadosDiv.appendChild(produtoItem);
+        });
+      } else {
+        resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
+      }
+    };
 
-					if (!c0 && !c1) continue;
+    async function carregarProdutos() {
+      try {
+        const resp = await fetch(currentUrl);
+        if (!resp.ok) throw new Error('Erro ao buscar CSV: ' + resp.status);
+        const csv = await resp.text();
+        const linhas = csv.split(/\r?\n/).filter(l => l.trim() !== '');
+        if (linhas.length === 0) {
+          resultadosDiv.innerHTML = '<p class="sem-resultados">Planilha vazia.</p>';
+          return;
+        }
 
-					const precoLider = formatBRL(parsePriceNumber(c1));
+        let startIndex = 0;
+        const firstCols = parseCSVLine(linhas[0]).map(c => (c||'').toString().toLowerCase());
+        if (firstCols.some(c => /produto|modelo|preco|valor/.test(c))) {
+          startIndex = 1;
+        }
 
-					parsed.push({
-						modelo: c0,
-						lidercell: precoLider
-					});
-				}
+        const parsed = [];
+        for (let i = startIndex; i < linhas.length; i++) {
+          const cols = parseCSVLine(linhas[i]);
+          const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1');
+          const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1');
 
-				produtos = parsed;
-				if (produtos.length > 0) displayResults(produtos);
-				else resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado na planilha.</p>';
+          if (!c0 && !c1) continue;
 
-			} catch (err) {
-				console.error('Erro ao carregar planilha:', err);
-				resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha.</p>';
-			}
-		}
+          const num = parsePriceNumber(c1);
+          const precoVenda = isNaN(num) ? (c1 || '') : formatBRL(num);
 
-		searchInput.addEventListener('input', (e) => {
-			const searchTerm = e.target.value.toLowerCase();
-			if (searchTerm.length > 0) {
-				const filteredProducts = produtos.filter(produto => 
-					produto.modelo.toLowerCase().includes(searchTerm)
-				);
-				displayResults(filteredProducts);
-			} else {
-				resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
-			}
-		});
+          parsed.push({
+            modelo: c0,
+            preco_venda: precoVenda
+          });
+        }
 
-		carregarProdutos();
-	</script>
+        produtos = parsed;
+        if (produtos.length > 0) displayResults(produtos);
+        else resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado na planilha.</p>';
+
+      } catch (err) {
+        console.error('Erro ao carregar planilha:', err);
+        resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha.</p>';
+      }
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      if (searchTerm.length > 0) {
+        const filteredProducts = produtos.filter(produto => 
+          produto.modelo.toLowerCase().includes(searchTerm)
+        );
+        displayResults(filteredProducts);
+      } else {
+        resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
+      }
+    });
+
+    carregarProdutos();
+  </script>
 </body>
 </html>
