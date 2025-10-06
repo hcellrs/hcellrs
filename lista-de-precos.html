@@ -59,7 +59,7 @@
 			font-style: italic;
 			padding: 20px;
 		}
-		/* só o valor em verde */
+		/* apenas o valor em verde */
 		.preco {
 			color: #28a745;
 			font-weight: bold;
@@ -138,10 +138,7 @@
 					const produtoItem = document.createElement('div');
 					produtoItem.className = 'produto-item';
 					produtoItem.innerHTML = `
-						📌 ${produto.modelo}<br>
-						Lidercell: <span class="preco">${produto.lidercell || '-'}</span><br>
-						Eletrocell: <span class="preco">${produto.eletrocell || '-'}</span><br>
-						Nova Peças: <span class="preco">${produto.novapecas || '-'}</span>
+						📌 ${produto.modelo} <span class="preco">${produto.lidercell || '-'}</span>
 					`;
 					resultadosDiv.appendChild(produtoItem);
 				});
@@ -163,7 +160,7 @@
 
 				let startIndex = 0;
 				const firstCols = parseCSVLine(linhas[0]).map(c => (c||'').toString().toLowerCase());
-				if (firstCols.some(c => /produto|modelo|preco|valor|lidercell|eletrocell|nova/.test(c))) {
+				if (firstCols.some(c => /produto|modelo|lidercell|valor/.test(c))) {
 					startIndex = 1;
 				}
 
@@ -172,20 +169,14 @@
 					const cols = parseCSVLine(linhas[i]);
 					const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1'); // Produto
 					const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1'); // Lidercell
-					const c2 = (cols[2] || '').trim().replace(/^"(.*)"$/,'$1'); // Eletrocell
-					const c3 = (cols[3] || '').trim().replace(/^"(.*)"$/,'$1'); // Nova Peças
 
-					if (!c0 && !c1 && !c2 && !c3) continue;
+					if (!c0 && !c1) continue;
 
 					const precoLider = formatBRL(parsePriceNumber(c1));
-					const precoEletro = formatBRL(parsePriceNumber(c2));
-					const precoNova = formatBRL(parsePriceNumber(c3));
 
 					parsed.push({
 						modelo: c0,
-						lidercell: precoLider,
-						eletrocell: precoEletro,
-						novapecas: precoNova
+						lidercell: precoLider
 					});
 				}
 
