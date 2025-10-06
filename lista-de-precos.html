@@ -35,7 +35,7 @@
       border-radius: 4px;
       font-size: 16px;
       box-sizing: border-box;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     #resultados {
       list-style: none;
@@ -81,7 +81,7 @@
     }
     .fornecedor-section {
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
     .fornecedor-section h2 {
       font-size: 16px;
@@ -112,6 +112,11 @@
     .btn-fornecedor.active {
       box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
     }
+    #fornecedorAtivo {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -127,9 +132,8 @@
     </div>
 
     <input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
-    <div id="resultados">
-      <p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
-    </div>
+    <div id="fornecedorAtivo"></div>
+    <div id="resultados"></div>
   </div>
 
   <script>
@@ -138,25 +142,37 @@
     
     let produtos = [];
     let currentUrl = urlLider;
+    let fornecedorNome = "Lidercell";
 
     const searchInput = document.getElementById('searchInput');
     const resultadosDiv = document.getElementById('resultados');
+    const fornecedorAtivoDiv = document.getElementById('fornecedorAtivo');
     const btnLider = document.getElementById('btnLider');
     const btnGold = document.getElementById('btnGold');
 
     btnLider.addEventListener('click', () => {
       currentUrl = urlLider;
+      fornecedorNome = "Lidercell";
       btnLider.classList.add('active');
       btnGold.classList.remove('active');
       carregarProdutos();
+      clearResults();
     });
 
     btnGold.addEventListener('click', () => {
       currentUrl = urlGold;
+      fornecedorNome = "GoldCell";
       btnGold.classList.add('active');
       btnLider.classList.remove('active');
       carregarProdutos();
+      clearResults();
     });
+
+    function clearResults() {
+      resultadosDiv.innerHTML = '';
+      fornecedorAtivoDiv.innerHTML = '';
+      searchInput.value = '';
+    }
 
     function parseCSVLine(line) {
       const fields = [];
@@ -201,6 +217,7 @@
     const displayResults = (results) => {
       resultadosDiv.innerHTML = '';
       if (results.length > 0) {
+        fornecedorAtivoDiv.innerHTML = `📦 Mostrando preços de: ${fornecedorNome}`;
         results.forEach(produto => {
           const produtoItem = document.createElement('div');
           produtoItem.className = 'produto-item';
@@ -210,6 +227,7 @@
           resultadosDiv.appendChild(produtoItem);
         });
       } else {
+        fornecedorAtivoDiv.innerHTML = '';
         resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
       }
     };
@@ -249,8 +267,6 @@
         }
 
         produtos = parsed;
-        if (produtos.length > 0) displayResults(produtos);
-        else resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado na planilha.</p>';
 
       } catch (err) {
         console.error('Erro ao carregar planilha:', err);
@@ -266,7 +282,8 @@
         );
         displayResults(filteredProducts);
       } else {
-        resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
+        resultadosDiv.innerHTML = '';
+        fornecedorAtivoDiv.innerHTML = '';
       }
     });
 
