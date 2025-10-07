@@ -1,290 +1,279 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabela de Preços - HCELL</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabela de Preços - HCELL</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.png">
 
-  <link rel="icon" type="image/x-icon" href="images/favicon.png">
-  <link rel="stylesheet" href="style.css"> 
+<style>
+	body {
+		font-family: Arial, sans-serif;
+		background-color: #f0f2f5;
+		padding: 20px;
+		color: #333;
+	}
+	.container {
+		max-width: 650px;
+		margin: 0 auto;
+		background-color: #ffffff;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	h1 {
+		text-align: center;
+		color: #1a73e8;
+		margin-bottom: 20px;
+	}
+	#searchInput {
+		width: 100%;
+		padding: 12px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		font-size: 16px;
+		box-sizing: border-box;
+		margin-bottom: 20px;
+	}
+	#resultados {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.produto-item {
+		padding: 15px;
+		border-bottom: 1px solid #eee;
+		transition: background-color 0.2s ease;
+	}
+	.produto-item:last-child {
+		border-bottom: none;
+	}
+	.produto-item:hover {
+		background-color: #f9f9f9;
+	}
+	.produto-modelo {
+		font-weight: bold;
+		font-size: 18px;
+		color: #333;
+		margin-bottom: 5px;
+	}
+	.produto-valor {
+		font-size: 16px;
+		color: #008000;
+		font-weight: bold;
+		margin: 5px 0;
+	}
+	.sem-resultados {
+		text-align: center;
+		color: #888;
+		font-style: italic;
+		padding: 20px;
+	}
+	.btn-voltar {
+		display: inline-block;
+		margin: 20px 0;
+		padding: 10px 20px;
+		background-color: #1a73e8;
+		color: #fff;
+		text-decoration: none;
+		border-radius: 4px;
+		font-weight: bold;
+	}
+	.btn-voltar:hover {
+		background-color: #155ab6;
+	}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #1a73e8;
-      margin-bottom: 20px;
-    }
-    #searchInput {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-      box-sizing: border-box;
-      margin-bottom: 10px;
-    }
-    #resultados {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .produto-item {
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      transition: background-color 0.2s ease;
-    }
-    .produto-item:last-child {
-      border-bottom: none;
-    }
-    .produto-item:hover {
-      background-color: #f9f9f9;
-    }
-    .produto-modelo {
-      font-weight: bold;
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 5px;
-    }
-    .produto-valor {
-      font-size: 16px;
-      color: green;
-      margin-left: 5px;
-    }
-    .sem-resultados {
-      text-align: center;
-      color: #888;
-      font-style: italic;
-      padding: 20px;
-    }
-    /* Botão voltar estilo antigo */
-    .btn-voltar {
-      display: inline-block;
-      background-color: #1a73e8;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 4px;
-      text-decoration: none;
-      margin-bottom: 15px;
-    }
-    .fornecedor-section {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .fornecedor-section h2 {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 10px;
-    }
-    .btn-fornecedor {
-      border: none;
-      padding: 10px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: #fff;
-      margin-right: 10px;
-      font-weight: bold;
-      transition: transform 0.1s ease-in-out, box-shadow 0.1s;
-    }
-    .btn-fornecedor:hover {
-      transform: scale(1.05);
-    }
-    .btn-lider {
-      background-color: #FFD633; /* amarelo */
-      color: #333;
-    }
-    .btn-gold {
-      background-color: #DAA520; /* dourado */
-      color: #fff;
-    }
-    .btn-fornecedor.active {
-      box-shadow: 0 0 0 3px black;
-    }
-    #fornecedorAtivo {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 10px;
-    }
-  </style>
+	/* ===== BOTÕES DOS FORNECEDORES ===== */
+	.fornecedores {
+		text-align: center;
+		margin-bottom: 20px;
+	}
+	.fornecedores button {
+		margin: 5px;
+		padding: 10px 16px;
+		border: none;
+		border-radius: 6px;
+		color: white;
+		font-weight: bold;
+		cursor: pointer;
+		transition: transform 0.15s ease, opacity 0.15s ease;
+	}
+	.fornecedores button:hover {
+		transform: scale(1.05);
+		opacity: 0.9;
+	}
+	.fornecedores button.ativo {
+		outline: 3px solid #333;
+	}
+
+	/* Cores padrão dos botões (você pode trocar as cores à vontade) */
+	.btn1 { background-color: #f7c948; } /* Amarelo - Fornecedor 1 */
+	.btn2 { background-color: #daa520; } /* Dourado - Fornecedor 2 */
+	.btn3 { background-color: #4caf50; } /* Verde - Fornecedor 3 */
+	.btn4 { background-color: #1e88e5; } /* Azul - Fornecedor 4 */
+</style>
 </head>
+
 <body>
-  <!-- <a href="index.html" class="btn-voltar">
-    <i class="fas fa-arrow-left" aria-hidden="true"></i>
-    Voltar para o Início
-  </a>-->
-  <a href="index.html" class="btn btn-primary" style="margin: 20px;">
+<a href="index.html" class="btn btn-primary" style="margin: 20px;">
 		<i class="fas fa-arrow-left" aria-hidden="true"></i>
 		Voltar para o Início
 	</a>
-  <h1>Tabela de Preços</h1>
+<!--<a href="index.html" class="btn-voltar">
+	← Voltar para o Início
+</a>-->
 
-  <div class="container">
-    <div class="fornecedor-section">
-      <h2>Selecione o fornecedor</h2>
-      <button class="btn-fornecedor btn-lider active" id="btnLider">Lidercell</button>
-      <button class="btn-fornecedor btn-gold" id="btnGold">GoldCell</button>
-    </div>
+<div class="container">
+	<h1>Consulta de Preços de Produtos</h1>
 
-    <input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
-    <div id="fornecedorAtivo"></div>
-    <div id="resultados"></div>
-  </div>
+	<div class="fornecedores">
+		<!-- Troque o texto dos botões conforme o nome dos fornecedores -->
+		<button class="btn1 ativo" onclick="trocarFornecedor(1)">Fornecedor 1</button>
+		<button class="btn2" onclick="trocarFornecedor(2)">Fornecedor 2</button>
+		<button class="btn3" onclick="trocarFornecedor(3)">Fornecedor 3</button>
+		<button class="btn4" onclick="trocarFornecedor(4)">Fornecedor 4</button>
+	</div>
 
-  <script>
-    const urlLider = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?output=csv";
-    const urlGold = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0GfwlmUazjTIO8LDmn9XMnThhgbKdlqwFgHHvO4oCzUNPlebYbRjZRhv2iCRujK37P4KklsitoS--/pub?gid=0&single=true&output=csv";
-    
-    let produtos = [];
-    let currentUrl = urlLider;
-    let fornecedorNome = "Lidercell";
+	<input type="text" id="searchInput" placeholder="Digite o modelo do produto...">
+	<div id="resultados">
+		<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>
+	</div>
+</div>
 
-    const searchInput = document.getElementById('searchInput');
-    const resultadosDiv = document.getElementById('resultados');
-    const fornecedorAtivoDiv = document.getElementById('fornecedorAtivo');
-    const btnLider = document.getElementById('btnLider');
-    const btnGold = document.getElementById('btnGold');
+<script>
+	/* ===== LINKS DAS PLANILHAS (CSV) =====
+	   Substitua os links abaixo pelos seus links publicados do Google Sheets.
+	   Todas as planilhas devem ter:
+	   Coluna A = Produto | Coluna B = Valor
+	*/
+	const planilhas = {
+		1: "https://docs.google.com/spreadsheets/d/e/SEU_LINK_1/pub?output=csv", // Fornecedor 1
+		2: "https://docs.google.com/spreadsheets/d/e/SEU_LINK_2/pub?output=csv", // Fornecedor 2
+		3: "https://docs.google.com/spreadsheets/d/e/SEU_LINK_3/pub?output=csv", // Fornecedor 3
+		4: "https://docs.google.com/spreadsheets/d/e/SEU_LINK_4/pub?output=csv"  // Fornecedor 4
+	};
 
-    btnLider.addEventListener('click', () => {
-      currentUrl = urlLider;
-      fornecedorNome = "Lidercell";
-      btnLider.classList.add('active');
-      btnGold.classList.remove('active');
-      carregarProdutos();
-      clearResults();
-    });
+	let fornecedorAtual = 1;
+	let produtos = [];
 
-    btnGold.addEventListener('click', () => {
-      currentUrl = urlGold;
-      fornecedorNome = "GoldCell";
-      btnGold.classList.add('active');
-      btnLider.classList.remove('active');
-      carregarProdutos();
-      clearResults();
-    });
+	const searchInput = document.getElementById('searchInput');
+	const resultadosDiv = document.getElementById('resultados');
 
-    function clearResults() {
-      resultadosDiv.innerHTML = '';
-      fornecedorAtivoDiv.innerHTML = '';
-      searchInput.value = '';
-    }
+	function parseCSVLine(line) {
+		const fields = [];
+		let cur = '';
+		let inQuotes = false;
+		for (let i = 0; i < line.length; i++) {
+			const ch = line[i];
+			if (ch === '"') {
+				if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+				else { inQuotes = !inQuotes; }
+			} else if (ch === ',' && !inQuotes) {
+				fields.push(cur);
+				cur = '';
+			} else {
+				cur += ch;
+			}
+		}
+		fields.push(cur);
+		return fields;
+	}
 
-    function parseCSVLine(line) {
-      const fields = [];
-      let cur = '';
-      let inQuotes = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"') {
-          if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
-          else { inQuotes = !inQuotes; }
-        } else if (ch === ',' && !inQuotes) {
-          fields.push(cur);
-          cur = '';
-        } else {
-          cur += ch;
-        }
-      }
-      fields.push(cur);
-      return fields;
-    }
+	function parsePriceNumber(raw) {
+		if (!raw) return NaN;
+		let s = String(raw).trim();
+		s = s.replace(/\u00A0/g,'');
+		s = s.replace(/[^\d\.,-]/g, '');
+		if (!s) return NaN;
+		if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) {
+			s = s.replace(/\./g, '').replace(',', '.');
+		} else {
+			s = s.replace(',', '.');
+		}
+		const n = parseFloat(s);
+		return isFinite(n) ? n : NaN;
+	}
 
-    function parsePriceNumber(raw) {
-      if (!raw) return NaN;
-      let s = String(raw).trim();
-      s = s.replace(/\u00A0/g,''); 
-      s = s.replace(/[^\d\.,-]/g, '');
-      if (!s) return NaN;
-      if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) {
-        s = s.replace(/\./g, '').replace(',', '.');
-      } else {
-        s = s.replace(',', '.');
-      }
-      const n = parseFloat(s);
-      return isFinite(n) ? n : NaN;
-    }
+	function formatBRL(value) {
+		if (isNaN(value)) return '';
+		return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+	}
 
-    function formatBRL(value) {
-      if (isNaN(value)) return '';
-      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
+	function displayResults(results) {
+		resultadosDiv.innerHTML = '';
+		if (results.length > 0) {
+			results.forEach(produto => {
+				const produtoItem = document.createElement('div');
+				produtoItem.className = 'produto-item';
+				produtoItem.innerHTML = `
+					<div class="produto-modelo">${produto.modelo}</div>
+					<div class="produto-valor">${produto.preco_venda}</div>
+				`;
+				resultadosDiv.appendChild(produtoItem);
+			});
+		} else {
+			resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
+		}
+	}
 
-    const displayResults = (results) => {
-      resultadosDiv.innerHTML = '';
-      if (results.length > 0) {
-        fornecedorAtivoDiv.innerHTML = `📦 Mostrando preços de: ${fornecedorNome}`;
-        results.forEach(produto => {
-          const produtoItem = document.createElement('div');
-          produtoItem.className = 'produto-item';
-          produtoItem.innerHTML = `
-            <div class="produto-modelo">📌 ${produto.modelo} <span class="produto-valor">${produto.preco_venda}</span></div>
-          `;
-          resultadosDiv.appendChild(produtoItem);
-        });
-      } else {
-        fornecedorAtivoDiv.innerHTML = '';
-        resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado com este termo.</p>';
-      }
-    };
+	async function carregarProdutos() {
+		try {
+			const resp = await fetch(planilhas[fornecedorAtual]);
+			if (!resp.ok) throw new Error('Erro ao buscar CSV: ' + resp.status);
+			const csv = await resp.text();
+			const linhas = csv.split(/\r?\n/).filter(l => l.trim() !== '');
+			if (linhas.length === 0) {
+				resultadosDiv.innerHTML = '<p class="sem-resultados">Planilha vazia.</p>';
+				return;
+			}
 
-    async function carregarProdutos() {
-      try {
-        const resp = await fetch(currentUrl);
-        if (!resp.ok) throw new Error('Erro ao buscar CSV: ' + resp.status);
-        const csv = await resp.text();
-        const linhas = csv.split(/\r?\n/).filter(l => l.trim() !== '');
-        if (linhas.length === 0) return;
+			let startIndex = 0;
+			const firstCols = parseCSVLine(linhas[0]).map(c => (c||'').toString().toLowerCase());
+			if (firstCols.some(c => /produto|modelo|preco|valor/.test(c))) {
+				startIndex = 1;
+			}
 
-        let startIndex = 0;
-        const firstCols = parseCSVLine(linhas[0]).map(c => (c||'').toString().toLowerCase());
-        if (firstCols.some(c => /produto|modelo|preco|valor/.test(c))) startIndex = 1;
+			const parsed = [];
+			for (let i = startIndex; i < linhas.length; i++) {
+				const cols = parseCSVLine(linhas[i]);
+				const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1');
+				const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1');
+				if (!c0 && !c1) continue;
+				const num = parsePriceNumber(c1);
+				const precoVenda = isNaN(num) ? (c1 || '') : formatBRL(num);
+				parsed.push({ modelo: c0, preco_venda: precoVenda });
+			}
 
-        const parsed = [];
-        for (let i = startIndex; i < linhas.length; i++) {
-          const cols = parseCSVLine(linhas[i]);
-          const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1');
-          const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1');
-          if (!c0 && !c1) continue;
-          const num = parsePriceNumber(c1);
-          const precoVenda = isNaN(num) ? (c1 || '') : formatBRL(num);
-          parsed.push({ modelo: c0, preco_venda: precoVenda });
-        }
+			produtos = parsed;
+			resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
+		} catch (err) {
+			console.error('Erro ao carregar planilha:', err);
+			resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha.</p>';
+		}
+	}
 
-        produtos = parsed;
+	function trocarFornecedor(num) {
+		fornecedorAtual = num;
+		document.querySelectorAll('.fornecedores button').forEach(btn => btn.classList.remove('ativo'));
+		document.querySelector(`.fornecedores button:nth-child(${num})`).classList.add('ativo');
+		searchInput.value = '';
+		resultadosDiv.innerHTML = '<p class="sem-resultados">Carregando produtos...</p>';
+		carregarProdutos();
+	}
 
-      } catch (err) {
-        console.error('Erro ao carregar planilha:', err);
-        resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha.</p>';
-      }
-    }
+	searchInput.addEventListener('input', e => {
+		const termo = e.target.value.toLowerCase();
+		if (termo.length > 0) {
+			const filtrados = produtos.filter(p => p.modelo.toLowerCase().includes(termo));
+			displayResults(filtrados);
+		} else {
+			resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
+		}
+	});
 
-    searchInput.addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      if (searchTerm.length > 0) {
-        const filteredProducts = produtos.filter(produto => 
-          produto.modelo.toLowerCase().includes(searchTerm)
-        );
-        displayResults(filteredProducts);
-      } else {
-        resultadosDiv.innerHTML = '';
-        fornecedorAtivoDiv.innerHTML = '';
-      }
-    });
+	// Carrega o fornecedor inicial
+	carregarProdutos();
+</script>
 
-    carregarProdutos();
-  </script>
 </body>
 </html>
-
