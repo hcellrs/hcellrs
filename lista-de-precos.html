@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Tabela de Preços - HCELL</title>
+
 	<link rel="icon" type="image/x-icon" href="images/favicon.png">
 
 	<!-- 🔹 Usa os arquivos da raiz da hospedagem -->
@@ -11,17 +12,46 @@
 	<script defer src="script.js"></script>
 
 	<style>
-		/* 🔹 Estilos complementares (apenas se precisar ajustar algo localmente) */
-		.btn-ativo {
-			outline: 2px solid #1a73e8;
-			transform: scale(1.07);
-			box-shadow: 0 0 8px rgba(26,115,232,0.4);
+		/* 🔸 Complementos locais específicos desta página */
+		.btn-container {
+			text-align: center;
+			margin-bottom: 25px;
 		}
+		.btn-fornecedor {
+			padding: 10px 18px;
+			margin: 5px;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 15px;
+			color: #fff;
+			font-weight: bold;
+			transition: transform 0.2s, opacity 0.2s;
+		}
+		.btn-fornecedor:hover {
+			transform: scale(1.05);
+			opacity: 0.9;
+		}
+
+		/* Cores dos fornecedores — pode personalizar */
+		.btn-lidercell { background-color: #ffcc00; color: #000; } /* Amarelo */
+		.btn-goldcell { background-color: #d4af37; color: #000; } /* Dourado */
+		.btn-eletrocell { background-color: #007bff; } /* Azul */
+		.btn-novapecas { background-color: #28a745; } /* Verde */
+
+		/* 🔹 Destaque para o botão ativo */
+		.btn-ativo {
+			outline: 3px solid var(--secondary-color, #1a73e8);
+			box-shadow: 0 0 8px rgba(26,115,232,0.4);
+			transform: scale(1.07);
+		}
+
+		/* Texto do fornecedor atual */
 		#fornecedorAtual {
 			text-align: center;
 			font-weight: bold;
 			font-size: 16px;
-			color: #1a73e8;
+			color: var(--primary-color, #1a73e8);
 			margin-top: 10px;
 			margin-bottom: 15px;
 		}
@@ -29,18 +59,18 @@
 </head>
 <body>
 	<a href="index.html" class="voltar">⬅ Voltar para o Início</a>
-	
+
 	<h1>Tabela de Preços</h1>
 
+	<!-- 🔹 Botões de fornecedores -->
 	<div class="btn-container">
-		<!-- 🔹 Você pode alterar os nomes e cores dos botões -->
-		<button class="btn btn-lidercell" onclick="selecionarFornecedor('lidercell', this)">Lidercell</button>
-		<button class="btn btn-goldcell" onclick="selecionarFornecedor('goldcell', this)">Goldcell</button>
-		<button class="btn btn-eletrocell" onclick="selecionarFornecedor('eletrocell', this)">Eletrocell</button>
-		<button class="btn btn-novapecas" onclick="selecionarFornecedor('novapecas', this)">Nova Peças</button>
+		<button class="btn-fornecedor btn-lidercell" onclick="selecionarFornecedor('lidercell', this)">Lidercell</button>
+		<button class="btn-fornecedor btn-goldcell" onclick="selecionarFornecedor('goldcell', this)">Goldcell</button>
+		<button class="btn-fornecedor btn-eletrocell" onclick="selecionarFornecedor('eletrocell', this)">Eletrocell</button>
+		<button class="btn-fornecedor btn-novapecas" onclick="selecionarFornecedor('novapecas', this)">Nova Peças</button>
 	</div>
 
-	<!-- 🔹 Aqui mostra qual fornecedor está sendo consultado -->
+	<!-- 🔹 Exibe o nome do fornecedor atual -->
 	<div id="fornecedorAtual">Selecione um fornecedor para iniciar a consulta.</div>
 
 	<div class="container">
@@ -52,7 +82,7 @@
 	</div>
 
 	<script>
-		/* 🔹 Links das planilhas CSV */
+		/* 🔹 Links das planilhas CSV (basta colar os links certos aqui) */
 		const planilhas = {
 			lidercell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?gid=0&single=true&output=csv",
 			goldcell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0GfwlmUazjTIO8LDmn9XMnThhgbKdlqwFgHHvO4oCzUNPlebYbRjZRhv2iCRujK37P4KklsitoS--/pub?gid=0&single=true&output=csv",
@@ -114,8 +144,7 @@
 					const produtoItem = document.createElement('div');
 					produtoItem.className = 'produto-item';
 					produtoItem.innerHTML = `
-						<div class="produto-modelo">${produto.modelo}</div>
-						<div class="produto-valor">${produto.preco_venda}</div>
+						📌 ${produto.modelo} <strong style="color:#28a745">${produto.preco_venda}</strong>
 					`;
 					resultadosDiv.appendChild(produtoItem);
 				});
@@ -154,7 +183,6 @@
 
 				produtos = parsed;
 				resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
-
 			} catch (err) {
 				console.error('Erro ao carregar planilha:', err);
 				resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha.</p>';
@@ -168,14 +196,15 @@
 				return;
 			}
 
-			// 🔹 Atualiza visualmente o botão ativo
-			document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('btn-ativo'));
+			// Remove destaque de todos e ativa o clicado
+			document.querySelectorAll('.btn-fornecedor').forEach(btn => btn.classList.remove('btn-ativo'));
 			botao.classList.add('btn-ativo');
 
-			// 🔹 Atualiza texto do fornecedor atual
+			// Atualiza texto do fornecedor atual
 			fornecedorSelecionado = botao.innerText;
 			fornecedorAtual.textContent = "Consulta atual: " + fornecedorSelecionado;
 
+			// Carrega os produtos
 			carregarProdutos(url);
 			searchInput.value = '';
 			resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
