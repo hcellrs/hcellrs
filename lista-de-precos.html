@@ -5,118 +5,43 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Tabela de Preços - HCELL</title>
 	<link rel="icon" type="image/x-icon" href="images/favicon.png">
+
+	<!-- 🔹 Usa os arquivos da raiz da hospedagem -->
+	<link rel="stylesheet" href="style.css">
+	<script defer src="script.js"></script>
+
 	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f0f2f5;
-			padding: 20px;
-			color: #333;
+		/* 🔹 Estilos complementares (apenas se precisar ajustar algo localmente) */
+		.btn-ativo {
+			outline: 2px solid #1a73e8;
+			transform: scale(1.07);
+			box-shadow: 0 0 8px rgba(26,115,232,0.4);
 		}
-		.container {
-			max-width: 600px;
-			margin: 0 auto;
-			background-color: #ffffff;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		}
-		h1 {
+		#fornecedorAtual {
 			text-align: center;
-			color: #1a73e8;
-			margin-bottom: 20px;
-		}
-		#searchInput {
-			width: 100%;
-			padding: 12px;
-			border: 1px solid #ddd;
-			border-radius: 4px;
-			font-size: 16px;
-			box-sizing: border-box;
-			margin-bottom: 20px;
-		}
-		#resultados {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-		.produto-item {
-			padding: 15px;
-			border-bottom: 1px solid #eee;
-			transition: background-color 0.2s ease;
-		}
-		.produto-item:last-child {
-			border-bottom: none;
-		}
-		.produto-item:hover {
-			background-color: #f9f9f9;
-		}
-		.produto-modelo {
 			font-weight: bold;
-			font-size: 18px;
-			color: #333;
-			margin-bottom: 5px;
-		}
-		.produto-valor {
 			font-size: 16px;
-			color: #555;
-			margin: 5px 0;
-		}
-		.sem-resultados {
-			text-align: center;
-			color: #888;
-			font-style: italic;
-			padding: 20px;
-		}
-		.btn-container {
-			text-align: center;
-			margin-bottom: 25px;
-		}
-		.btn {
-			padding: 10px 18px;
-			margin: 5px;
-			border: none;
-			border-radius: 6px;
-			cursor: pointer;
-			font-size: 15px;
-			color: #fff;
-			transition: transform 0.2s, opacity 0.2s;
-		}
-		.btn:hover {
-			transform: scale(1.05);
-			opacity: 0.9;
-		}
-		/* Cores dos botões — você pode alterar */
-		.btn-lidercell { background-color: #ffcc00; color: #000; } /* Amarelo */
-		.btn-goldcell { background-color: #d4af37; color: #000; } /* Dourado */
-		.btn-eletrocell { background-color: #007bff; } /* Azul */
-		.btn-novapecas { background-color: #28a745; } /* Verde */
-		
-		.voltar {
-			display: inline-block;
-			margin-bottom: 20px;
-			text-decoration: none;
-			color: #fff;
-			background-color: #1a73e8;
-			padding: 10px 15px;
-			border-radius: 6px;
-		}
-		.voltar:hover {
-			background-color: #155bc5;
+			color: #1a73e8;
+			margin-top: 10px;
+			margin-bottom: 15px;
 		}
 	</style>
 </head>
 <body>
-    <a href="index.html" class="voltar"> Voltar para o Início</a>
+	<a href="index.html" class="voltar">⬅ Voltar para o Início</a>
 	
 	<h1>Tabela de Preços</h1>
 
 	<div class="btn-container">
-		<!-- 🔹 Altere o nome do botão e o link no código JS abaixo -->
-		<button class="btn btn-lidercell" onclick="selecionarFornecedor('lidercell')">Lidercell</button>
-		<button class="btn btn-goldcell" onclick="selecionarFornecedor('goldcell')">Goldcell</button>
-		<button class="btn btn-eletrocell" onclick="selecionarFornecedor('eletrocell')">Eletrocell</button>
-		<button class="btn btn-novapecas" onclick="selecionarFornecedor('novapecas')">Nova Peças</button>
+		<!-- 🔹 Você pode alterar os nomes e cores dos botões -->
+		<button class="btn btn-lidercell" onclick="selecionarFornecedor('lidercell', this)">Lidercell</button>
+		<button class="btn btn-goldcell" onclick="selecionarFornecedor('goldcell', this)">Goldcell</button>
+		<button class="btn btn-eletrocell" onclick="selecionarFornecedor('eletrocell', this)">Eletrocell</button>
+		<button class="btn btn-novapecas" onclick="selecionarFornecedor('novapecas', this)">Nova Peças</button>
 	</div>
+
+	<!-- 🔹 Aqui mostra qual fornecedor está sendo consultado -->
+	<div id="fornecedorAtual">Selecione um fornecedor para iniciar a consulta.</div>
 
 	<div class="container">
 		<h1>Consulta de Preços</h1>
@@ -127,8 +52,8 @@
 	</div>
 
 	<script>
+		/* 🔹 Links das planilhas CSV */
 		const planilhas = {
-			// 🔹 Cole os links CSV de cada fornecedor abaixo:
 			lidercell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?gid=0&single=true&output=csv",
 			goldcell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0GfwlmUazjTIO8LDmn9XMnThhgbKdlqwFgHHvO4oCzUNPlebYbRjZRhv2iCRujK37P4KklsitoS--/pub?gid=0&single=true&output=csv",
 			eletrocell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVODR_ZxfbJPiwXyXvTQLFboPiDvwy_32oUnLApVSxqNP_TIO4_tAELsBHELnQL4RXZlBOxkjp8Z-j/pub?gid=0&single=true&output=csv",
@@ -136,9 +61,11 @@
 		};
 
 		let produtos = [];
+		let fornecedorSelecionado = '';
 
 		const searchInput = document.getElementById('searchInput');
 		const resultadosDiv = document.getElementById('resultados');
+		const fornecedorAtual = document.getElementById('fornecedorAtual');
 
 		function parseCSVLine(line) {
 			const fields = [];
@@ -219,12 +146,9 @@
 					const cols = parseCSVLine(linhas[i]);
 					const c0 = (cols[0] || '').trim().replace(/^"(.*)"$/,'$1');
 					const c1 = (cols[1] || '').trim().replace(/^"(.*)"$/,'$1');
-
 					if (!c0 && !c1) continue;
-
 					const num = parsePriceNumber(c1);
 					const precoVenda = isNaN(num) ? (c1 || '') : formatBRL(num);
-
 					parsed.push({ modelo: c0, preco_venda: precoVenda });
 				}
 
@@ -237,12 +161,21 @@
 			}
 		}
 
-		function selecionarFornecedor(nome) {
+		function selecionarFornecedor(nome, botao) {
 			const url = planilhas[nome];
 			if (!url) {
 				alert("Link da planilha não configurado para " + nome);
 				return;
 			}
+
+			// 🔹 Atualiza visualmente o botão ativo
+			document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('btn-ativo'));
+			botao.classList.add('btn-ativo');
+
+			// 🔹 Atualiza texto do fornecedor atual
+			fornecedorSelecionado = botao.innerText;
+			fornecedorAtual.textContent = "Consulta atual: " + fornecedorSelecionado;
+
 			carregarProdutos(url);
 			searchInput.value = '';
 			resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
@@ -260,12 +193,3 @@
 	</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
