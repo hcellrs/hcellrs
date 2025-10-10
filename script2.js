@@ -104,3 +104,20 @@ if ('webkitSpeechRecognition' in window) {
 		setTimeout(() => (voiceBtn.style.background = '#1a73e8'), 1000);
 	};
 }
+
+produtos.forEach(produto => {
+    const nome = produto.gsx$nome.$t;   // coluna A
+    const venda = produto.gsx$preco.$t; // coluna B
+    const custo = produto.gsx$custo.$t; // coluna C
+
+    const div = document.createElement("div");
+    div.classList.add("produto");
+
+    div.innerHTML = `
+        <p>📌 ${nome} – ${venda}</p>
+        <p class="preco-custo">💰 Custo: ${custo}</p>
+    `;
+
+    document.getElementById("lista-produtos").appendChild(div);
+});
+
