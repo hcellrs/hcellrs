@@ -196,3 +196,12 @@ body.dark-mode #voiceBtn {
 	background: #fff;
 	color: #1a73e8;
 }
+
+.preco-custo {
+    font-size: 8px;
+    color: #a0a0a0; /* cinza claro */
+    margin: 0;
+}
+.produto {
+    margin-bottom: 10px;
+}
