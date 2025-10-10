@@ -41,47 +41,32 @@ function formatBRL(n) {
 	return isNaN(n) ? '' : n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Carrega produtos da planilha
 async function carregarProdutos(url) {
 	try {
 		if (cachePlanilhas[url]) {
 			produtos = cachePlanilhas[url];
-			renderizarProdutos();
+			resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
 			return;
 		}
 		const resp = await fetch(url);
 		const csv = await resp.text();
 		const linhas = csv.split(/\r?\n/).filter(l => l.trim());
 		const dados = linhas.slice(1).map(l => {
-			const [modelo, preco, custo] = parseCSVLine(l); // pega coluna C
-			return { 
-				modelo, 
+			const [modelo, preco, custo] = parseCSVLine(l);
+			return {
+				modelo,
 				preco_venda: formatBRL(parsePrice(preco)),
-				preco_custo: formatBRL(parsePrice(custo))
+				custo: formatBRL(parsePrice(custo))
 			};
 		});
 		cachePlanilhas[url] = dados;
 		produtos = dados;
-		renderizarProdutos();
+		resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado. Digite para buscar.</p>';
 	} catch {
 		resultadosDiv.innerHTML = '<p class="sem-resultados">Erro ao carregar planilha.</p>';
 	}
 }
 
-// Renderiza produtos na tela
-function renderizarProdutos(termoBusca = '') {
-	const filtrados = produtos.filter(p => p.modelo.toLowerCase().includes(termoBusca.toLowerCase()));
-	resultadosDiv.innerHTML = filtrados.length ? 
-		filtrados.map(p => `
-			<div class="produto-item">
-				<span>📌 ${p.modelo} – ${p.preco_venda}</span>
-				<p class="preco-custo">💰 Custo: ${p.preco_custo}</p>
-			</div>
-		`).join('') :
-		'<p class="sem-resultados">Nenhum produto encontrado.</p>';
-}
-
-// Seleciona fornecedor
 function selecionarFornecedor(nome, botao) {
 	document.querySelectorAll('.btn-fornecedor').forEach(b => b.classList.remove('btn-ativo'));
 	botao.classList.add('btn-ativo');
@@ -90,12 +75,22 @@ function selecionarFornecedor(nome, botao) {
 	searchInput.value = '';
 }
 
-// Busca dinâmica
+// 🧠 Busca dinâmica
 searchInput.addEventListener('input', e => {
-	renderizarProdutos(e.target.value);
+	const termo = e.target.value.toLowerCase();
+	const filtrados = produtos.filter(p => p.modelo.toLowerCase().includes(termo));
+	resultadosDiv.innerHTML = filtrados.length ?
+		filtrados.map(p => `
+			<div class="produto-item">
+				<span>${p.modelo}</span>
+				<strong class="preco-venda">${p.preco_venda}</strong>
+				<p class="preco-custo">💰 Custo: ${p.custo}</p>
+			</div>
+		`).join('') :
+		'<p class="sem-resultados">Nenhum produto encontrado.</p>';
 });
 
-// Busca por voz
+// 🎙️ Busca por voz
 const voiceBtn = document.getElementById('voiceBtn');
 if ('webkitSpeechRecognition' in window) {
 	const rec = new webkitSpeechRecognition();
