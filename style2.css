@@ -80,7 +80,7 @@ header a.voltar:hover {
 .btn-lidercell { background-color: #ffcc00; color: #000; }
 .btn-goldcell { background-color: #d4af37; color: #000; }
 .btn-eletrocell { background-color: #007bff; color: #000; }
-.btn-novapecas { background-color: #28a745; color: #000; }
+.btn-prime { background-color: #28a745; color: #000; }
 
 .btn-fornecedor:hover { transform: scale(1.05); opacity: 0.9; }
 
@@ -211,5 +211,6 @@ body.dark-mode #voiceBtn {
 	background: #fff;
 	color: #1a73e8;
 }
+
 
 
