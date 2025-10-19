@@ -50,15 +50,21 @@ if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const usuario = document.getElementById('inputUsuario').value;
-        const senha = document.getElementById('inputSenha').value;
+        // CORREÇÃO: Usar os IDs corretos (usuario e senha)
+        const usuario = document.getElementById('usuario').value; 
+        const senha = document.getElementById('senha').value;
+        
+        // CORREÇÃO: Usar o ID do botão (btn-login)
+        const btnLogin = document.getElementById('btn-login'); 
+        
         const loginMessage = document.getElementById('loginMessage');
-        const btnLogin = document.getElementById('btn-login');
         
         // Limpa a mensagem e desabilita o botão
         loginMessage.style.display = 'none';
         btnLogin.disabled = true;
-        btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...';
+        
+        // CORREÇÃO: Alterar o texto de loading
+        btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...'; 
 
         const data = {
             action: 'login',
@@ -71,7 +77,6 @@ if (document.getElementById('loginForm')) {
         if (result.sucesso) {
             // LOGIN BEM-SUCEDIDO: Salva o token e redireciona
             localStorage.setItem(LOGIN_TOKEN_KEY, result.token);
-            // CORREÇÃO: Redireciona para o dashboard.html (no mesmo diretório /Sistema/)
             window.location.href = DASHBOARD_PAGE_NAME; 
         } else {
             // LOGIN FALHOU
@@ -80,11 +85,11 @@ if (document.getElementById('loginForm')) {
             
             // Habilita o botão novamente
             btnLogin.disabled = false;
-            btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i> Entrar no Sistema';
+            // CORREÇÃO: Alterar o texto de volta para o original do botão
+            btnLogin.innerHTML = 'Login';
         }
     });
 }
-
 
 // -----------------------------------------------------------------
 // 2. LÓGICA DE LOGOUT
@@ -203,4 +208,5 @@ if (document.getElementById('cadastroClienteForm')) {
         }
     });
 }
+
 
