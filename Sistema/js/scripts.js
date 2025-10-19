@@ -148,3 +148,59 @@ checkAuth();
 
 // Este bloco será ativado quando você criar o formulário no cadastrar_cliente.html
 // if (document.getElementById('cadastroClienteForm')) { ... }
+
+// =================================================================
+// 4. LÓGICA DE CADASTRO DE CLIENTE (CRUD - CREATE)
+// =================================================================
+
+if (document.getElementById('cadastroClienteForm')) {
+    document.getElementById('cadastroClienteForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const token = localStorage.getItem(LOGIN_TOKEN_KEY);
+        const btnCadastrar = document.getElementById('btn-cadastrar');
+        const cadastroMessage = document.getElementById('cadastroMessage');
+        const form = e.target;
+
+        // 1. Coleta dos dados do formulário
+        const clienteData = {
+            nome: document.getElementById('inputNome').value.trim(),
+            telefone: document.getElementById('inputTelefone').value.trim(),
+            email: document.getElementById('inputEmail').value.trim(),
+            documento: document.getElementById('inputDocumento').value.trim(),
+            endereco: document.getElementById('inputEndereco').value.trim()
+        };
+
+        // 2. Monta o payload para a API
+        const dataToSend = {
+            action: 'cadastrarCliente',
+            token: token, // Envia o token para autenticação
+            cliente: clienteData
+        };
+
+        // 3. Efeitos visuais (Loading)
+        btnCadastrar.disabled = true;
+        btnCadastrar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Cadastrando...';
+        cadastroMessage.style.display = 'none';
+
+        // 4. Envio para a API
+        const result = await sendDataToAPI(dataToSend);
+
+        // 5. Resultado
+        btnCadastrar.disabled = false;
+        btnCadastrar.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i> Cadastrar Cliente';
+        
+        cadastroMessage.textContent = result.mensagem;
+        cadastroMessage.style.display = 'block';
+
+        if (result.sucesso) {
+            cadastroMessage.classList.remove('alert-danger');
+            cadastroMessage.classList.add('alert-success');
+            form.reset(); // Limpa o formulário após o sucesso
+        } else {
+            cadastroMessage.classList.remove('alert-success');
+            cadastroMessage.classList.add('alert-danger');
+        }
+    });
+}
+
