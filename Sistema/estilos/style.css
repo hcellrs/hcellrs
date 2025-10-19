@@ -1,100 +1,138 @@
-/* ---------------------------------- */
-/* CONFIGURAÇÕES GLOBAIS */
-/* ---------------------------------- */
+/* =================================== */
+/* LAYOUT GERAL E BACKGROUND
+/* =================================== */
 body {
-    overflow-x: hidden; /* Evita a barra de rolagem horizontal */
-    background-color: #f4f7fa; /* Fundo claro para o conteúdo principal */
+    overflow-x: hidden;
+    /* Cor de fundo da área de conteúdo (cinza bem claro) */
+    background-color: #f8f9fa; 
 }
 
-/* ---------------------------------- */
-/* ESTILO DO MENU LATERAL (SIDEBAR) */
-/* ---------------------------------- */
+#wrapper {
+    display: flex;
+}
 
-#sidebar-wrapper {
+/* =================================== */
+/* NOVA SIDEBAR (Tema SMART System Azul Sólido)
+/* =================================== */
+
+.sidebar-wrapper {
+    width: 260px; 
     min-height: 100vh;
-    width: 250px; /* Largura padrão do menu */
-    position: fixed; /* Ocupa toda a altura, mas NÃO é fixo junto com o scroll */
+    /* Cor Azul Sólida da Sidebar (Extraída da imagem de referência) */
+    background-color: #1c3d5a; 
+    
+    transition: margin 0.25s ease-out;
+    position: fixed; 
     z-index: 1000;
-    /* Move o menu para fora da tela por padrão, alinhado à borda (o 'toggled' o traz de volta) */
-    margin-left: -250px; 
-    transition: margin 0.25s ease-out; /* Transição suave */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Gradiente de cor personalizado (Inspirado na sua imagem de referência) */
-.bg-dark-custom {
-    background: linear-gradient(180deg, #5c20c4 0%, #3e129e 100%);
+/* Título da Sidebar */
+.sidebar-heading {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
+    background-color: #132b40; /* Fundo um pouco mais escuro para o cabeçalho */
+}
+.sidebar-heading .brand-text {
+    font-weight: 600;
 }
 
-.border-bottom-custom {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Links do Menu */
+.list-group-item {
+    padding: 0.9rem 1.25rem;
+    border: none;
+    color: rgba(255, 255, 255, 0.85); 
+    background-color: transparent;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-.list-group-item-action {
-    transition: background-color 0.15s ease-in-out;
-    padding-left: 20px;
+.list-group-item:hover {
+    color: #fff;
+    background-color: #132b40; /* Cor de fundo no hover (mais escuro que a sidebar) */
+    border-left: 4px solid #fff; /* Destaque branco no hover */
+    padding-left: calc(1.25rem - 4px);
 }
 
-/* Efeito de hover nos links */
-.list-group-item-action:hover {
-    background-color: rgba(255, 255, 255, 0.15) !important;
+/* Link Ativo (Página Atual) */
+.list-group-item.active {
+    color: #fff;
+    font-weight: 600;
+    background-color: #132b40; 
+    border-left: 4px solid #fff; 
+    padding-left: calc(1.25rem - 4px);
 }
 
-/* Link ativo (selecionado) */
-.active-custom {
-    font-weight: bold;
-    background-color: rgba(0, 0, 0, 0.1) !important;
+/* Sub-menu (Accordion) */
+.sub-menu .list-group-item {
+    padding-left: 3.0rem; 
+    font-size: 0.85rem;
+    background-color: #132b40; /* Cor do sub-menu igual ao ativo/hover */
 }
 
-/* Posiciona o link Sair/Configuração no fim da sidebar */
-.sidebar-bottom-link {
+.sub-menu .list-group-item:hover {
+    background-color: #2a5278; /* Fundo um pouco mais claro para o hover no sub-menu */
+}
+
+/* Seta do menu expansível */
+.icon-arrow {
+    transition: transform 0.2s ease;
+}
+a[aria-expanded="true"] .icon-arrow {
+    transform: rotate(180deg);
+}
+
+/* Link Sair */
+.list-group-item#logoutButton {
     position: absolute;
-    bottom: 20px;
+    bottom: 0;
     width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+.list-group-item#logoutButton:hover {
+    background-color: #dc3545; 
+    color: #fff;
+    border-left: none;
+    padding-left: 1.25rem;
 }
 
-/* ---------------------------------- */
-/* ESTILO DA ÁREA DE CONTEÚDO */
-/* ---------------------------------- */
+
+/* =================================== */
+/* ÁREA DE CONTEÚDO
+/* =================================== */
 
 #page-content-wrapper {
     width: 100%;
-    /* No desktop, o conteúdo é empurrado para o lado para acomodar o menu */
-    margin-left: 0; 
-    padding-top: 56px; /* Espaço para a navbar superior */
-    transition: margin 0.25s ease-out; /* Transição suave */
+    padding-left: 260px; 
+    transition: padding-left 0.25s ease-out;
 }
 
-/* ---------------------------------- */
-/* EFEITO DE MOSTRAR O MENU (TOGGLE) */
-/* ---------------------------------- */
-
-/* Quando a classe 'toggled' é adicionada ao #wrapper, o menu desliza para a tela */
-#wrapper.toggled #sidebar-wrapper {
-    margin-left: 0;
+/* Navbar Superior (Header) */
+#page-content-wrapper .navbar {
+    min-height: 60px;
+}
+/* Cor do botão de menu */
+#sidebarToggle {
+    background-color: #1c3d5a; /* Azul da sidebar */
+    border-color: #1c3d5a;
+}
+#sidebarToggle:hover {
+    background-color: #132b40; /* Azul escuro */
+    border-color: #132b40;
 }
 
-/* Quando a classe 'toggled' é adicionada, o conteúdo é empurrado para o lado para não sobrepor o menu */
-#wrapper.toggled #page-content-wrapper {
-    margin-left: 250px;
-}
 
-/* ---------------------------------- */
-/* RESPONSIVIDADE (Ajustes Finais para Desktop) */
-/* ---------------------------------- */
+/* =================================== */
+/* RESPONSIVIDADE (Toggle)
+/* =================================== */
 
-@media (min-width: 768px) {
-    /* Em telas grandes (desktop), o menu fica sempre visível */
-    #wrapper #sidebar-wrapper {
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        margin-left: -260px;
+    }
+    #wrapper.toggled .sidebar-wrapper {
         margin-left: 0;
     }
-    
-    /* E o conteúdo é sempre deslocado para acomodá-lo */
-    #wrapper #page-content-wrapper {
-        margin-left: 250px;
-    }
-    
-    /* Remove o efeito toggle, pois o menu já está visível por padrão no desktop */
-    #wrapper.toggled #sidebar-wrapper {
-        margin-left: 0;
+    #page-content-wrapper {
+        padding-left: 0;
     }
 }
