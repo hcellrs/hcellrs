@@ -41,28 +41,29 @@ async function sendDataToAPI(data) {
     }
 }
 
-
 // -----------------------------------------------------------------
-// 1. LÓGICA DE LOGIN (ARQUIVO: index.html)
+// 1. LÓGICA DE LOGIN (ARQUIVO: index.html) - VERSÃO FINAL CORRIGIDA
 // -----------------------------------------------------------------
 
 if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // IDs corrigidos
+        // 1. Captura de Elementos
         const usuario = document.getElementById('usuario').value; 
         const senha = document.getElementById('senha').value;
         const btnLogin = document.getElementById('btn-login'); 
-        
         const loginMessage = document.getElementById('loginMessage');
         
-        // Limpa a mensagem e desabilita o botão
+        // 2. Efeitos Visuais (Agora com verificação de existência do botão)
         loginMessage.style.display = 'none';
-        btnLogin.disabled = true;
-        
-        // Texto de loading
-        btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...'; 
+
+        if (btnLogin) {
+            btnLogin.disabled = true;
+            // Use o atributo 'data-original-html' para guardar o texto original
+            btnLogin.setAttribute('data-original-html', btnLogin.innerHTML); 
+            btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...';
+        }
 
         const data = {
             action: 'login',
@@ -73,18 +74,19 @@ if (document.getElementById('loginForm')) {
         const result = await sendDataToAPI(data);
 
         if (result.sucesso) {
-            // LOGIN BEM-SUCEDIDO: Salva o token e redireciona
+            // LOGIN BEM-SUCEDIDO
             localStorage.setItem(LOGIN_TOKEN_KEY, result.token);
             window.location.href = DASHBOARD_PAGE_NAME; 
         } else {
             // LOGIN FALHOU
-            loginMessage.textContent = result.mensagem || 'Erro desconhecido.';
+            loginMessage.textContent = result.mensagem || 'Erro desconhecido. Verifique sua URL da API.';
             loginMessage.style.display = 'block';
             
-            // Habilita o botão novamente
-            btnLogin.disabled = false;
-            // Texto de volta
-            btnLogin.innerHTML = 'Login';
+            // 3. Reverte o Botão
+            if (btnLogin) {
+                btnLogin.disabled = false;
+                btnLogin.innerHTML = btnLogin.getAttribute('data-original-html') || 'Login';
+            }
         }
     });
 }
@@ -199,3 +201,4 @@ if (document.getElementById('cadastroClienteForm')) {
         }
     });
 }
+
