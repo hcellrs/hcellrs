@@ -2,6 +2,9 @@
 // 1. LÓGICA DE LOGIN (ARQUIVO: login.html, AGORA RENOMEADO PARA index.html)
 // =================================================================
 
+// No início do arquivo Sistema/js/scripts.js
+console.log("Sistema HCELL - Scripts carregados com sucesso!");
+
 // ... (cerca da linha 96)
         if (result.sucesso) {
             // LOGIN BEM-SUCEDIDO: Salva o token e redireciona
@@ -45,4 +48,5 @@ function checkAuth() {
     }
 }
 // Executa a checagem de login assim que a página é carregada
+
 checkAuth();
