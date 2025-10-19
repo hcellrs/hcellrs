@@ -1,52 +1,150 @@
 // =================================================================
-// 1. LÓGICA DE LOGIN (ARQUIVO: login.html, AGORA RENOMEADO PARA index.html)
+// CONFIGURAÇÕES GLOBAIS
 // =================================================================
 
-// No início do arquivo Sistema/js/scripts.js
+// TESTE DE CARREGAMENTO:
 console.log("Sistema HCELL - Scripts carregados com sucesso!");
 
-// ... (cerca da linha 96)
+// URL DA API DE QA GERADA PELO GOOGLE APPS SCRIPT (MANTENHA ESTA)
+const API_URL = "https://script.google.com/macros/s/AKfycbwWe2ZELb68fH9sT_GrntYhYWXYvMiMeld_GFDPvHLim1wTJEFCmpFc6fcj__W8CSsX6Q/exec"; 
+const LOGIN_TOKEN_KEY = 'hcell_auth_token';
+
+const LOGIN_PAGE_NAME = 'index.html'; // Arquivo de login (agora dentro de /Sistema/)
+const DASHBOARD_PAGE_NAME = 'dashboard.html'; // Arquivo do dashboard
+
+// -----------------------------------------------------------------
+// FUNÇÃO DE UTILIDADE PARA ENVIAR DADOS AO APPS SCRIPT
+// -----------------------------------------------------------------
+
+async function sendDataToAPI(data) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(data)
+        });
+        
+        const text = await response.text();
+        
+        if (text && text.startsWith('{')) {
+            return JSON.parse(text); 
+        } else {
+            console.error('Resposta inválida da API:', text);
+            return { sucesso: false, mensagem: 'Resposta inesperada do servidor Apps Script.' };
+        }
+
+    } catch (error) {
+        console.error('Erro na comunicação com a API:', error);
+        return { sucesso: false, mensagem: 'Erro de rede ou servidor.' };
+    }
+}
+
+
+// -----------------------------------------------------------------
+// 1. LÓGICA DE LOGIN (ARQUIVO: index.html)
+// -----------------------------------------------------------------
+
+if (document.getElementById('loginForm')) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const usuario = document.getElementById('inputUsuario').value;
+        const senha = document.getElementById('inputSenha').value;
+        const loginMessage = document.getElementById('loginMessage');
+        const btnLogin = document.getElementById('btn-login');
+        
+        // Limpa a mensagem e desabilita o botão
+        loginMessage.style.display = 'none';
+        btnLogin.disabled = true;
+        btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...';
+
+        const data = {
+            action: 'login',
+            usuario: usuario,
+            senha: senha
+        };
+
+        const result = await sendDataToAPI(data);
+
         if (result.sucesso) {
             // LOGIN BEM-SUCEDIDO: Salva o token e redireciona
             localStorage.setItem(LOGIN_TOKEN_KEY, result.token);
-            // REDIRECIONAMENTO CORRIGIDO: Agora vai para o dashboard.html
-            window.location.href = 'dashboard.html'; 
-        } 
-// ...
+            // CORREÇÃO: Redireciona para o dashboard.html (no mesmo diretório /Sistema/)
+            window.location.href = DASHBOARD_PAGE_NAME; 
+        } else {
+            // LOGIN FALHOU
+            loginMessage.textContent = result.mensagem || 'Erro desconhecido.';
+            loginMessage.style.display = 'block';
+            
+            // Habilita o botão novamente
+            btnLogin.disabled = false;
+            btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i> Entrar no Sistema';
+        }
+    });
+}
 
-// =================================================================
-// 2. VERIFICAÇÃO DE AUTENTICAÇÃO (Para todas as páginas do sistema)
-// =================================================================
 
-// Função para verificar se o usuário está logado
+// -----------------------------------------------------------------
+// 2. LÓGICA DE LOGOUT
+// -----------------------------------------------------------------
+
+function handleLogout() {
+    localStorage.removeItem(LOGIN_TOKEN_KEY);
+    // Redireciona para o login (index.html)
+    window.location.href = LOGIN_PAGE_NAME;
+}
+
+// Adiciona o listener ao botão "Sair" do Dashboard
+if (document.getElementById('logoutButton')) {
+    document.getElementById('logoutButton').addEventListener('click', function(e) {
+        e.preventDefault(); // Impede o link de navegar
+        handleLogout();
+    });
+}
+
+
+// -----------------------------------------------------------------
+// 3. VERIFICAÇÃO DE AUTENTICAÇÃO (Em todas as páginas do sistema)
+// -----------------------------------------------------------------
+
 function checkAuth() {
     const token = localStorage.getItem(LOGIN_TOKEN_KEY);
     const currentPage = window.location.pathname.split('/').pop();
 
-    // Novo nome do arquivo de login é 'index.html'
-    const loginPage = 'index.html';
-    // Novo nome do arquivo do dashboard é 'dashboard.html'
-    const dashboardPage = 'dashboard.html';
+    // Páginas que NÃO exigem login (apenas a tela de login)
+    const isLoginPage = currentPage === LOGIN_PAGE_NAME || currentPage === ''; // Inclui a URL base se for hcellrs.com.br/sistema/
 
-    // Se estiver na tela de login, mas já tem token, vai para o dashboard
-    if (token && currentPage === loginPage) {
-        window.location.href = dashboardPage;
-        return;
-    }
-
-    // Se NÃO estiver na tela de login e NÃO tem token, volta para o login
-    // Verifica se a página atual é alguma página do sistema (e não a pasta raiz do seu site principal)
-    if (!token && currentPage !== loginPage) {
-        // Redireciona para o arquivo index.html (que agora é o login)
-        window.location.href = loginPage; 
-        return;
+    // SE O USUÁRIO TEM TOKEN
+    if (token) {
+        // Se está logado e tenta acessar o Login, redireciona para o Dashboard
+        if (isLoginPage) {
+            window.location.href = DASHBOARD_PAGE_NAME;
+            return;
+        }
+    } else {
+        // SE O USUÁRIO NÃO TEM TOKEN (Não está logado)
+        // Se está em qualquer página que não seja o Login, redireciona para o Login
+        if (!isLoginPage) {
+            window.location.href = LOGIN_PAGE_NAME; 
+            return;
+        }
     }
     
-    // O resto da checagem
-    if (currentPage !== loginPage) {
+    // Se chegou aqui, está logado e no sistema ou deslogado na tela de login.
+    if (!isLoginPage) {
         console.log("Usuário autenticado. Token presente.");
     }
 }
-// Executa a checagem de login assim que a página é carregada
 
+// Executa a checagem de login assim que a página é carregada
 checkAuth();
+
+
+// -----------------------------------------------------------------
+// 4. LÓGICA DE CADASTRO DE CLIENTE (Futuro)
+// -----------------------------------------------------------------
+
+// Este bloco será ativado quando você criar o formulário no cadastrar_cliente.html
+// if (document.getElementById('cadastroClienteForm')) { ... }
