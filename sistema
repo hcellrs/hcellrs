@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=Sistema/index.html">
+    <title>Acessando o Sistema HCELL</title>
+    <script>
+        // Opção JavaScript de fallback (se o meta tag for bloqueado)
+        window.onload = function() {
+            window.location.href = "Sistema/index.html";
+        };
+    </script>
+</head>
+<body>
+    <p>Se você não for redirecionado automaticamente, clique no link abaixo:</p>
+    <p><a href="Sistema/index.html">Acessar Sistema</a></p>
+</body>
+</html>
