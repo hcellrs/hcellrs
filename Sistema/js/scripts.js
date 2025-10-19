@@ -50,11 +50,9 @@ if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // CORREÇÃO: Usar os IDs corretos (usuario e senha)
+        // IDs corrigidos
         const usuario = document.getElementById('usuario').value; 
         const senha = document.getElementById('senha').value;
-        
-        // CORREÇÃO: Usar o ID do botão (btn-login)
         const btnLogin = document.getElementById('btn-login'); 
         
         const loginMessage = document.getElementById('loginMessage');
@@ -63,7 +61,7 @@ if (document.getElementById('loginForm')) {
         loginMessage.style.display = 'none';
         btnLogin.disabled = true;
         
-        // CORREÇÃO: Alterar o texto de loading
+        // Texto de loading
         btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...'; 
 
         const data = {
@@ -85,7 +83,7 @@ if (document.getElementById('loginForm')) {
             
             // Habilita o botão novamente
             btnLogin.disabled = false;
-            // CORREÇÃO: Alterar o texto de volta para o original do botão
+            // Texto de volta
             btnLogin.innerHTML = 'Login';
         }
     });
@@ -148,15 +146,8 @@ checkAuth();
 
 
 // -----------------------------------------------------------------
-// 4. LÓGICA DE CADASTRO DE CLIENTE (Futuro)
-// -----------------------------------------------------------------
-
-// Este bloco será ativado quando você criar o formulário no cadastrar_cliente.html
-// if (document.getElementById('cadastroClienteForm')) { ... }
-
-// =================================================================
 // 4. LÓGICA DE CADASTRO DE CLIENTE (CRUD - CREATE)
-// =================================================================
+// -----------------------------------------------------------------
 
 if (document.getElementById('cadastroClienteForm')) {
     document.getElementById('cadastroClienteForm').addEventListener('submit', async function(e) {
@@ -208,5 +199,3 @@ if (document.getElementById('cadastroClienteForm')) {
         }
     });
 }
-
-
