@@ -84,7 +84,6 @@ if (document.getElementById('loginForm')) {
             localStorage.setItem(LOGIN_TOKEN_KEY, result.token);
             window.location.href = DASHBOARD_PAGE_NAME; 
         } else {
-            // Se o login falhar, pode ser problema nas credenciais ou na URL da API
             loginMessage.textContent = result.mensagem || 'Falha no Login. Verifique credenciais e URL da API.';
             loginMessage.style.display = 'block';
             
@@ -145,7 +144,7 @@ checkAuth();
 
 
 // -----------------------------------------------------------------
-// 4. LÓGICA DE CADASTRO (Ajuste o ID do form depois para 'cadastroPessoaForm')
+// 4. LÓGICA DE CADASTRO DE CLIENTE (CRUD - CREATE)
 // -----------------------------------------------------------------
 
 if (document.getElementById('cadastroClienteForm')) {
@@ -159,6 +158,7 @@ if (document.getElementById('cadastroClienteForm')) {
 
         // 1. Coleta dos dados do formulário
         const clienteData = {
+            // Estes IDs DEVEM coincidir com os campos no HTML do formulário
             nome: document.getElementById('inputNome').value.trim(),
             telefone: document.getElementById('inputTelefone').value.trim(),
             email: document.getElementById('inputEmail').value.trim(),
