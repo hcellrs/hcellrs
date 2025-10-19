@@ -9,8 +9,8 @@ console.log("Sistema HCELL - Scripts carregados com sucesso!");
 const API_URL = "https://script.google.com/macros/s/AKfycbwWe2ZELb68fH9sT_GrntYhYWXYvMiMeld_GFDPvHLim1wTJEFCmpFc6fcj__W8CSsX6Q/exec"; 
 const LOGIN_TOKEN_KEY = 'hcell_auth_token';
 
-const LOGIN_PAGE_NAME = 'index.html'; // Arquivo de login (agora dentro de /Sistema/)
-const DASHBOARD_PAGE_NAME = 'dashboard.html'; // Arquivo do dashboard
+const LOGIN_PAGE_NAME = 'index.html'; 
+const DASHBOARD_PAGE_NAME = 'dashboard.html'; 
 
 // -----------------------------------------------------------------
 // FUNÇÃO DE UTILIDADE PARA ENVIAR DADOS AO APPS SCRIPT
@@ -41,8 +41,9 @@ async function sendDataToAPI(data) {
     }
 }
 
+
 // -----------------------------------------------------------------
-// 1. LÓGICA DE LOGIN (ARQUIVO: index.html) - VERSÃO FINAL CORRIGIDA
+// 1. LÓGICA DE LOGIN (ARQUIVO: index.html) - VERSÃO ROBUSTA
 // -----------------------------------------------------------------
 
 if (document.getElementById('loginForm')) {
@@ -52,19 +53,24 @@ if (document.getElementById('loginForm')) {
         // 1. Captura de Elementos
         const usuario = document.getElementById('usuario').value; 
         const senha = document.getElementById('senha').value;
-        const btnLogin = document.getElementById('btn-login'); 
         const loginMessage = document.getElementById('loginMessage');
         
-        // 2. Efeitos Visuais (Agora com verificação de existência do botão)
+        // Tenta achar pelo ID, se falhar, tenta pela CLASSE (segurança)
+        let btnLogin = document.getElementById('btn-login'); 
+        if (!btnLogin) {
+            btnLogin = document.querySelector('.btn-login'); 
+        }
+        
+        // 2. Efeitos Visuais (SÓ executa se o botão for encontrado!)
         loginMessage.style.display = 'none';
 
         if (btnLogin) {
-            btnLogin.disabled = true;
-            // Use o atributo 'data-original-html' para guardar o texto original
             btnLogin.setAttribute('data-original-html', btnLogin.innerHTML); 
+            btnLogin.disabled = true;
             btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Acessando...';
         }
 
+        // 3. Comunicação com a API
         const data = {
             action: 'login',
             usuario: usuario,
@@ -73,16 +79,16 @@ if (document.getElementById('loginForm')) {
 
         const result = await sendDataToAPI(data);
 
+        // 4. Tratamento da Resposta
         if (result.sucesso) {
-            // LOGIN BEM-SUCEDIDO
             localStorage.setItem(LOGIN_TOKEN_KEY, result.token);
             window.location.href = DASHBOARD_PAGE_NAME; 
         } else {
-            // LOGIN FALHOU
-            loginMessage.textContent = result.mensagem || 'Erro desconhecido. Verifique sua URL da API.';
+            // Se o login falhar, pode ser problema nas credenciais ou na URL da API
+            loginMessage.textContent = result.mensagem || 'Falha no Login. Verifique credenciais e URL da API.';
             loginMessage.style.display = 'block';
             
-            // 3. Reverte o Botão
+            // 5. Reverte o Botão (SÓ se for encontrado!)
             if (btnLogin) {
                 btnLogin.disabled = false;
                 btnLogin.innerHTML = btnLogin.getAttribute('data-original-html') || 'Login';
@@ -97,14 +103,12 @@ if (document.getElementById('loginForm')) {
 
 function handleLogout() {
     localStorage.removeItem(LOGIN_TOKEN_KEY);
-    // Redireciona para o login (index.html)
     window.location.href = LOGIN_PAGE_NAME;
 }
 
-// Adiciona o listener ao botão "Sair" do Dashboard
 if (document.getElementById('logoutButton')) {
     document.getElementById('logoutButton').addEventListener('click', function(e) {
-        e.preventDefault(); // Impede o link de navegar
+        e.preventDefault(); 
         handleLogout();
     });
 }
@@ -118,37 +122,30 @@ function checkAuth() {
     const token = localStorage.getItem(LOGIN_TOKEN_KEY);
     const currentPage = window.location.pathname.split('/').pop();
 
-    // Páginas que NÃO exigem login (apenas a tela de login)
-    const isLoginPage = currentPage === LOGIN_PAGE_NAME || currentPage === ''; // Inclui a URL base se for hcellrs.com.br/sistema/
+    const isLoginPage = currentPage === LOGIN_PAGE_NAME || currentPage === ''; 
 
-    // SE O USUÁRIO TEM TOKEN
     if (token) {
-        // Se está logado e tenta acessar o Login, redireciona para o Dashboard
         if (isLoginPage) {
             window.location.href = DASHBOARD_PAGE_NAME;
             return;
         }
     } else {
-        // SE O USUÁRIO NÃO TEM TOKEN (Não está logado)
-        // Se está em qualquer página que não seja o Login, redireciona para o Login
         if (!isLoginPage) {
             window.location.href = LOGIN_PAGE_NAME; 
             return;
         }
     }
     
-    // Se chegou aqui, está logado e no sistema ou deslogado na tela de login.
     if (!isLoginPage) {
         console.log("Usuário autenticado. Token presente.");
     }
 }
 
-// Executa a checagem de login assim que a página é carregada
 checkAuth();
 
 
 // -----------------------------------------------------------------
-// 4. LÓGICA DE CADASTRO DE CLIENTE (CRUD - CREATE)
+// 4. LÓGICA DE CADASTRO (Ajuste o ID do form depois para 'cadastroPessoaForm')
 // -----------------------------------------------------------------
 
 if (document.getElementById('cadastroClienteForm')) {
@@ -172,7 +169,7 @@ if (document.getElementById('cadastroClienteForm')) {
         // 2. Monta o payload para a API
         const dataToSend = {
             action: 'cadastrarCliente',
-            token: token, // Envia o token para autenticação
+            token: token, 
             cliente: clienteData
         };
 
@@ -194,11 +191,10 @@ if (document.getElementById('cadastroClienteForm')) {
         if (result.sucesso) {
             cadastroMessage.classList.remove('alert-danger');
             cadastroMessage.classList.add('alert-success');
-            form.reset(); // Limpa o formulário após o sucesso
+            form.reset(); 
         } else {
             cadastroMessage.classList.remove('alert-success');
             cadastroMessage.classList.add('alert-danger');
         }
     });
 }
-
