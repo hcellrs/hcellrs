@@ -9,7 +9,8 @@ const planilhas = {
 	lidercell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn563fJoYnFQa2569Tj4aFmBdxmxmKQF3wUlPKEOeY1tQTOoHj18cMflnPx2ea4Q2cQeW13QShzHh/pub?gid=0&single=true&output=csv",
 	goldcell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0GfwlmUazjTIO8LDmn9XMnThhgbKdlqwFgHHvO4oCzUNPlebYbRjZRhv2iCRujK37P4KklsitoS--/pub?gid=0&single=true&output=csv",
 	eletrocell: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVODR_ZxfbJPiwXyXvTQLFboPiDvwy_32oUnLApVSxqNP_TIO4_tAELsBHELnQL4RXZlBOxkjp8Z-j/pub?gid=0&single=true&output=csv",
-	prime: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRCX7SYJFFUdD8QI3zPaq4QqSkzapv5y2R7KrXmqkYle-NqL_6n8bh9WatrzvhR_-aNW9jsj-Df2G-/pub?gid=0&single=true&output=csv"
+	prime: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRCX7SYJFFUdD8QI3zPaq4QqSkzapv5y2R7KrXmqkYle-NqL_6n8bh9WatrzvhR_-aNW9jsj-Df2G-/pub?gid=0&single=true&output=csv",
+	assistec: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQb2h43D1i-ALxU0KYnanJFwQLtWl1dIh6gxEGH52Z3ZXXpiEiSna_L_61aQvjovetp66C0KuD7ZyB1/pub?gid=0&single=true&output=csv"
 };
 
 let produtos = [];
@@ -114,5 +115,6 @@ if ('webkitSpeechRecognition' in window) {
 		setTimeout(() => (voiceBtn.style.background = '#1a73e8'), 1000);
 	};
 }
+
 
 
