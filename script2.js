@@ -97,12 +97,17 @@ searchInput.addEventListener('input', e => {
 			<p class="preco-custo">💰 Custo: ${p.custo}</p>
 		`;
 
-		// 👇 Mostra o custo de apenas UM produto por vez
-		div.addEventListener('click', () => {
-			document.querySelectorAll('.produto-item.mostrar-custo')
-				.forEach(el => el.classList.remove('mostrar-custo'));
-			div.classList.toggle('mostrar-custo');
-		});
+		// 👇 Mostra o custo de apenas UM produto por vez (e fecha se clicar no mesmo)
+div.addEventListener('click', () => {
+	const jaAtivo = div.classList.contains('mostrar-custo');
+	document.querySelectorAll('.produto-item.mostrar-custo')
+		.forEach(el => el.classList.remove('mostrar-custo'));
+
+	if (!jaAtivo) {
+		div.classList.add('mostrar-custo');
+	}
+});
+	
 
 		resultadosDiv.appendChild(div);
 	});
@@ -132,3 +137,4 @@ if ('webkitSpeechRecognition' in window) {
 		setTimeout(() => (voiceBtn.style.background = '#1a73e8'), 1000);
 	};
 }
+
