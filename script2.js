@@ -97,8 +97,10 @@ searchInput.addEventListener('input', e => {
 			<p class="preco-custo">💰 Custo: ${p.custo}</p>
 		`;
 
-		// 👇 Clique para mostrar/ocultar custo
+		// 👇 Mostra o custo de apenas UM produto por vez
 		div.addEventListener('click', () => {
+			document.querySelectorAll('.produto-item.mostrar-custo')
+				.forEach(el => el.classList.remove('mostrar-custo'));
 			div.classList.toggle('mostrar-custo');
 		});
 
