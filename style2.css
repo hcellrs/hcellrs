@@ -215,6 +215,20 @@ body.dark-mode #voiceBtn {
 	color: #1a73e8;
 }
 
+/* 👇 Oculta o custo inicialmente */
+.preco-custo {
+	display: none;
+	font-size: 10px;
+	color: #00c853;
+	margin-top: 2px;
+	width: 100%;
+}
+
+/* 👇 Mostra o custo apenas quando clicar */
+.produto-item.mostrar-custo .preco-custo {
+	display: block;
+}
+
 
 
 
