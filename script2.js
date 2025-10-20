@@ -80,15 +80,30 @@ function selecionarFornecedor(nome, botao) {
 searchInput.addEventListener('input', e => {
 	const termo = e.target.value.toLowerCase();
 	const filtrados = produtos.filter(p => p.modelo.toLowerCase().includes(termo));
-	resultadosDiv.innerHTML = filtrados.length ?
-		filtrados.map(p => `
-			<div class="produto-item">
-				<span>${p.modelo}</span>
-				<strong class="preco-venda">${p.preco_venda}</strong>
-				<p class="preco-custo">💰 Custo: ${p.custo}</p>
-			</div>
-		`).join('') :
-		'<p class="sem-resultados">Nenhum produto encontrado.</p>';
+
+	resultadosDiv.innerHTML = '';
+
+	if (filtrados.length === 0) {
+		resultadosDiv.innerHTML = '<p class="sem-resultados">Nenhum produto encontrado.</p>';
+		return;
+	}
+
+	filtrados.forEach(p => {
+		const div = document.createElement('div');
+		div.classList.add('produto-item');
+		div.innerHTML = `
+			<span>${p.modelo}</span>
+			<strong class="preco-venda">${p.preco_venda}</strong>
+			<p class="preco-custo">💰 Custo: ${p.custo}</p>
+		`;
+
+		// 👇 Clique para mostrar/ocultar custo
+		div.addEventListener('click', () => {
+			div.classList.toggle('mostrar-custo');
+		});
+
+		resultadosDiv.appendChild(div);
+	});
 });
 
 // 🎙️ Busca por voz
@@ -115,6 +130,3 @@ if ('webkitSpeechRecognition' in window) {
 		setTimeout(() => (voiceBtn.style.background = '#1a73e8'), 1000);
 	};
 }
-
-
-
