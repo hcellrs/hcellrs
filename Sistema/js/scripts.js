@@ -3,7 +3,7 @@
 // =================================================================
 
 // URL DA API DE QA GERADA PELO GOOGLE APPS SCRIPT (MANTENHA ESTA)
-const API_URL = "https://script.google.com/macros/s/AKfycbwWe2ZELb68fH9sT_GrntYhYWXYvMiMeld_GFDPvHLim1wTJEFCmpFc6fcj__W8CSsX6Q/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbwOMTs3SsTRXvrN0aQipKLbaChad2KocwLAWyoUMZSWyV0xetn_646KnVdrrGuswzUhjQ/exec"; 
 const LOGIN_TOKEN_KEY = 'hcell_auth_token';
 
 const LOGIN_PAGE_NAME = 'index.html'; 
@@ -196,3 +196,4 @@ if (document.getElementById('cadastroClienteForm')) {
         }
     });
 }
+
