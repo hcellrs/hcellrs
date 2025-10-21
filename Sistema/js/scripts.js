@@ -127,7 +127,7 @@ checkAuth();
 
 
 // -----------------------------------------------------------------
-// 4. LÓGICA DE CADASTRO DE CLIENTE (CRUD - CREATE)
+// 4. LÓGICA DE CADASTRO DE PESSOAS (CRUD - CREATE)
 // -----------------------------------------------------------------
 
 if (document.getElementById('cadastroClienteForm')) {
@@ -139,24 +139,49 @@ if (document.getElementById('cadastroClienteForm')) {
         const cadastroMessage = document.getElementById('cadastroMessage');
         const form = e.target;
 
-        const clienteData = {
+        // 1. Coleta os Tipos de Cadastro marcados (Cliente, Fornecedor, etc.)
+        const tiposCadastro = Array.from(document.querySelectorAll('input[name="tipoCadastro"]:checked'))
+                                 .map(cb => cb.value)
+                                 .join(', '); // Ex: "Cliente, Fornecedor"
+
+        // 2. Coleta os demais dados do formulário
+        const pessoaData = {
+            // Tipo e Nome
+            tipoPessoa: document.querySelector('input[name="tipoPessoa"]:checked').value, // Física ou Jurídica
+            tiposCadastro: tiposCadastro, // Cliente, Fornecedor, etc.
             nome: document.getElementById('inputNome').value.trim(),
-            telefone: document.getElementById('inputTelefone').value.trim(),
+            documento: document.getElementById('inputDocumento').value.trim(), // CPF/CNPJ
+            rg: document.getElementById('inputRG').value.trim(),
+            
+            // Contato
+            telefone1: document.getElementById('inputTelefone1').value.trim(),
+            telefone2: document.getElementById('inputTelefone2').value.trim(),
             email: document.getElementById('inputEmail').value.trim(),
-            documento: document.getElementById('inputDocumento').value.trim(),
-            endereco: document.getElementById('inputEndereco').value.trim()
+
+            // Endereço
+            cep: document.getElementById('inputCEP').value.trim(),
+            rua: document.getElementById('inputRua').value.trim(),
+            numero: document.getElementById('inputNumero').value.trim(),
+            bairro: document.getElementById('inputBairro').value.trim(),
+            cidade: document.getElementById('inputCidade').value.trim(),
+            estado: document.getElementById('inputEstado').value.trim(),
+            
+            // Dados de auditoria
+            dataCadastro: new Date().toISOString().split('T')[0] // Data atual no formato AAAA-MM-DD
         };
 
-        const dataToSend = { action: 'cadastrarCliente', token: token, cliente: clienteData };
+        const dataToSend = { action: 'cadastrarPessoa', token: token, pessoa: pessoaData };
 
+        // Desabilita o botão e mostra o spinner
         btnCadastrar.disabled = true;
-        btnCadastrar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Cadastrando...';
+        btnCadastrar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
         cadastroMessage.style.display = 'none';
 
         const result = await sendDataToAPI(dataToSend);
 
+        // Restaura o botão
         btnCadastrar.disabled = false;
-        btnCadastrar.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i> Cadastrar Cliente';
+        btnCadastrar.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i> Salvar Cadastro';
         
         cadastroMessage.textContent = result.mensagem;
         cadastroMessage.style.display = 'block';
@@ -164,7 +189,7 @@ if (document.getElementById('cadastroClienteForm')) {
         if (result.sucesso) {
             cadastroMessage.classList.remove('alert-danger');
             cadastroMessage.classList.add('alert-success');
-            form.reset(); 
+            form.reset(); // Limpa o formulário após o sucesso
         } else {
             cadastroMessage.classList.remove('alert-success');
             cadastroMessage.classList.add('alert-danger');
