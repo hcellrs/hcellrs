@@ -197,3 +197,56 @@ if (document.getElementById('cadastroClienteForm')) {
     });
 }
 
+// -----------------------------------------------------------------
+// 5. LÓGICA DE LISTAGEM DE PESSOAS (CRUD - READ)
+// -----------------------------------------------------------------
+
+async function carregarPessoas() {
+    const token = localStorage.getItem(LOGIN_TOKEN_KEY);
+    const dadosContainer = document.getElementById('pessoasTableBody'); // O corpo da sua tabela (TBODY)
+    const mensagemElemento = document.getElementById('listagemMessage');
+    
+    // Limpa a tabela e mostra mensagem de carregamento
+    if (dadosContainer) dadosContainer.innerHTML = '<tr><td colspan="6">Carregando dados...</td></tr>';
+    if (mensagemElemento) mensagemElemento.style.display = 'none';
+
+    const dataToSend = { action: 'buscarPessoas', token: token };
+    const result = await sendDataToAPI(dataToSend);
+
+    if (dadosContainer) dadosContainer.innerHTML = ''; // Limpa o "Carregando"
+
+    if (result.sucesso && result.dados && result.dados.length > 0) {
+        // Preenche a tabela
+        result.dados.forEach(pessoa => {
+            const row = dadosContainer.insertRow();
+            
+            // Exibindo colunas chave: Nome, Tipo, Telefone e Ações
+            row.insertCell().textContent = pessoa.dataCadastro ? new Date(pessoa.dataCadastro).toLocaleDateString() : '';
+            row.insertCell().textContent = pessoa.nome || 'N/A';
+            row.insertCell().textContent = pessoa.tiposCadastro || 'N/A';
+            row.insertCell().textContent = pessoa.telefone1 || 'N/A';
+            row.insertCell().textContent = pessoa.documento || 'N/A';
+
+            // Coluna de Ações (Futuro: Edit/Delete)
+            const acoesCell = row.insertCell();
+            acoesCell.innerHTML = '<button class="btn btn-sm btn-info me-2">Ver</button><button class="btn btn-sm btn-warning">Editar</button>';
+        });
+        
+    } else {
+        // Trata falha ou lista vazia
+        const mensagem = result.mensagem || 'Nenhum cliente/fornecedor encontrado.';
+        if (dadosContainer) dadosContainer.innerHTML = '<tr><td colspan="6">' + mensagem + '</td></tr>';
+        
+        if (mensagemElemento) {
+            mensagemElemento.textContent = mensagem;
+            mensagemElemento.classList.remove('alert-success');
+            mensagemElemento.classList.add('alert-warning');
+            mensagemElemento.style.display = 'block';
+        }
+    }
+}
+
+// Inicia o carregamento quando a página de listagem é carregada
+if (window.location.pathname.endsWith('lista_clientes.html') || document.getElementById('pessoasTableBody')) {
+    carregarPessoas();
+}
