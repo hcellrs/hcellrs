@@ -256,22 +256,129 @@ if (window.location.pathname.endsWith('lista_clientes.html') || document.getElem
 // -----------------------------------------------------------------
 
 /**
- * Função placeholder para visualizar os detalhes de uma pessoa.
- * No futuro, irá redirecionar para uma página de visualização detalhada.
+ * Redireciona para a página de detalhes, passando o documento via parâmetro de URL.
  * @param {string} documento - O documento (CPF/CNPJ) da pessoa.
  */
 function verDetalhes(documento) {
-    alert('Ação VER: Funcionalidade de visualização de detalhes em desenvolvimento. Documento: ' + documento);
-    // Próxima Etapa: Implementar a busca e exibição de detalhes.
+    if (documento) {
+        // Redireciona para a página de detalhes com o documento no URL
+        window.location.href = 'detalhes_pessoa.html?doc=' + encodeURIComponent(documento);
+    } else {
+        alert('Documento não encontrado para visualização.');
+    }
+}
+
+// Manter a função iniciarEdicao para futura implementação...
+function iniciarEdicao(documento) {
+    alert('Ação EDITAR: Funcionalidade de edição em desenvolvimento. Documento: ' + documento);
+}
+
+// -----------------------------------------------------------------
+// 7. LÓGICA DE CARREGAMENTO DE DETALHES (CRUD - READ DETALHADO)
+// -----------------------------------------------------------------
+
+/**
+ * Obtém um parâmetro da URL.
+ * @param {string} name - Nome do parâmetro (ex: 'doc').
+ * @returns {string|null} - Valor do parâmetro ou null.
+ */
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+async function carregarDetalhesPessoa() {
+    const documento = getUrlParameter('doc');
+    const token = localStorage.getItem(LOGIN_TOKEN_KEY);
+    const form = document.getElementById('cadastroPessoaForm'); // Seu formulário
+
+    // Se não há documento na URL ou o formulário não existe (não está na página certa)
+    if (!documento || !form) return; 
+
+    // Bloqueia o formulário enquanto os dados são carregados
+    disableForm(form, true); 
+    document.querySelector('h1').textContent = `Carregando detalhes do documento: ${documento}...`;
+
+    const dataToSend = { action: 'buscarPessoaPorDocumento', token: token, documento: documento };
+    const result = await sendDataToAPI(dataToSend);
+
+    if (result.sucesso && result.dados) {
+        document.querySelector('h1').textContent = `Detalhes de ${result.dados.nome || 'Pessoa'}`;
+        preencherFormulario(form, result.dados);
+        
+        // Mantém desabilitado para modo 'Ver Detalhes'
+        disableForm(form, true); 
+
+        // Opcional: Adiciona um botão "Voltar" ou "Editar"
+        document.querySelector('h1').innerHTML += `
+            <a href="lista_clientes.html" class="btn btn-secondary ms-3"><i class="bi bi-arrow-left"></i> Voltar</a>
+            <button class="btn btn-warning ms-2" onclick="iniciarEdicao('${documento}')"><i class="bi bi-pencil"></i> Editar</button>
+        `;
+
+    } else {
+        document.querySelector('h1').textContent = 'Erro ao carregar detalhes';
+        alert(result.mensagem || 'Falha ao buscar detalhes da pessoa.');
+    }
 }
 
 /**
- * Função placeholder para iniciar o processo de edição.
- * No futuro, irá redirecionar para a página de cadastro/edição com os dados pré-preenchidos.
- * @param {string} documento - O documento (CPF/CNPJ) da pessoa.
+ * Função utilitária para preencher o formulário.
+ * @param {HTMLFormElement} form - O elemento do formulário.
+ * @param {Object} data - O objeto com os dados da pessoa.
  */
-function iniciarEdicao(documento) {
-    alert('Ação EDITAR: Funcionalidade de edição em desenvolvimento. Documento: ' + documento);
-    // Próxima Etapa: Implementar a lógica de preenchimento e update (CRUD-U).
+function preencherFormulario(form, data) {
+    for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+            const input = form.querySelector(`[name="${key}"]`);
+            if (input) {
+                // Lógica de preenchimento para diferentes tipos de input (radio, checkbox, text)
+                if (input.type === 'radio') {
+                    // Para radio buttons (ex: tipoPessoa, Masculino/Feminino)
+                    form.querySelectorAll(`[name="${key}"][value="${data[key]}"]`).forEach(radio => {
+                        radio.checked = true;
+                    });
+                } else if (input.type === 'checkbox') {
+                    // Para checkboxes (ex: tiposCadastro - Cliente, Fornecedor)
+                    const values = data[key].split(',').map(v => v.trim()); // Assume que são separados por vírgula
+                    form.querySelectorAll(`[name="${key}"]`).forEach(checkbox => {
+                        if (values.includes(checkbox.value)) {
+                            checkbox.checked = true;
+                        }
+                    });
+                } else {
+                    input.value = data[key];
+                }
+            }
+        }
+    }
 }
 
+/**
+ * Função utilitária para desabilitar o formulário.
+ * @param {HTMLFormElement} form - O elemento do formulário.
+ * @param {boolean} disabled - True para desabilitar, false para habilitar.
+ */
+function disableForm(form, disabled) {
+    const inputs = form.querySelectorAll('input, select, textarea, button');
+    inputs.forEach(input => {
+        // Deixa o botão de Voltar/Editar utilizável
+        if (input.onclick && (input.textContent.includes('Voltar') || input.textContent.includes('Editar'))) {
+            input.disabled = false;
+        } else {
+            input.disabled = disabled;
+        }
+    });
+    // Esconde o botão Salvar/Cadastrar se estiver no modo 'Ver'
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.style.display = disabled ? 'none' : 'block';
+    }
+}
+
+
+// Inicia o carregamento quando a página de detalhes for acessada
+if (window.location.pathname.endsWith('detalhes_pessoa.html')) {
+    carregarDetalhesPessoa();
+}
