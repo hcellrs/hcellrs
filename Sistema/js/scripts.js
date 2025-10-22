@@ -251,6 +251,8 @@ if (window.location.pathname.endsWith('lista_clientes.html') || document.getElem
     carregarPessoas();
 }
 
+// Localize o Tópico 6 no seu scripts.js
+
 // -----------------------------------------------------------------
 // 6. AÇÕES DA TABELA (VER, EDITAR)
 // -----------------------------------------------------------------
@@ -261,17 +263,13 @@ if (window.location.pathname.endsWith('lista_clientes.html') || document.getElem
  */
 function verDetalhes(documento) {
     if (documento) {
-        // Redireciona para a página de detalhes com o documento no URL
+        // Esta linha é a chave: ela redireciona e passa o parâmetro 'doc'
         window.location.href = 'detalhes_pessoa.html?doc=' + encodeURIComponent(documento);
     } else {
         alert('Documento não encontrado para visualização.');
     }
 }
-
-// Manter a função iniciarEdicao para futura implementação (CRUD - UPDATE)...
-function iniciarEdicao(documento) {
-    alert('Ação EDITAR: Funcionalidade de edição em desenvolvimento. Documento: ' + documento);
-}
+// ... (e o restante das novas funções que criamos no Tópico 7)
 
 // -----------------------------------------------------------------
 // 7. LÓGICA DE CARREGAMENTO DE DETALHES (CRUD - READ DETALHADO)
@@ -392,3 +390,4 @@ function disableForm(form, disabled) {
 if (window.location.pathname.endsWith('detalhes_pessoa.html')) {
     carregarDetalhesPessoa();
 }
+
