@@ -252,7 +252,7 @@ if (window.location.pathname.endsWith('lista_clientes.html') || document.getElem
 }
 
 // -----------------------------------------------------------------
-// 6. PLACEHOLDERS PARA AÇÕES DA LISTAGEM (Futuro: CRUD - READ Detalhado, UPDATE e DELETE)
+// 6. AÇÕES DA TABELA (VER, EDITAR)
 // -----------------------------------------------------------------
 
 /**
@@ -268,7 +268,7 @@ function verDetalhes(documento) {
     }
 }
 
-// Manter a função iniciarEdicao para futura implementação...
+// Manter a função iniciarEdicao para futura implementação (CRUD - UPDATE)...
 function iniciarEdicao(documento) {
     alert('Ação EDITAR: Funcionalidade de edição em desenvolvimento. Documento: ' + documento);
 }
@@ -280,7 +280,7 @@ function iniciarEdicao(documento) {
 /**
  * Obtém um parâmetro da URL.
  * @param {string} name - Nome do parâmetro (ex: 'doc').
- * @returns {string|null} - Valor do parâmetro ou null.
+ * @returns {string|null} - Valor do parâmetro ou string vazia.
  */
 function getUrlParameter(name) {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -289,37 +289,47 @@ function getUrlParameter(name) {
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
+/**
+ * Carrega os detalhes de uma pessoa usando o documento (CPF/CNPJ) da URL.
+ */
 async function carregarDetalhesPessoa() {
     const documento = getUrlParameter('doc');
     const token = localStorage.getItem(LOGIN_TOKEN_KEY);
-    const form = document.getElementById('cadastroPessoaForm'); // Seu formulário
+    const form = document.getElementById('cadastroPessoaForm'); // ID do seu formulário na página detalhes_pessoa.html
 
     // Se não há documento na URL ou o formulário não existe (não está na página certa)
     if (!documento || !form) return; 
 
-    // Bloqueia o formulário enquanto os dados são carregados
-    disableForm(form, true); 
+    // Mensagem de carregamento
     document.querySelector('h1').textContent = `Carregando detalhes do documento: ${documento}...`;
+    
+    // Desabilita temporariamente para evitar cliques
+    disableForm(form, true); 
 
     const dataToSend = { action: 'buscarPessoaPorDocumento', token: token, documento: documento };
     const result = await sendDataToAPI(dataToSend);
 
     if (result.sucesso && result.dados) {
+        
+        // 1. Atualiza o Título
         document.querySelector('h1').textContent = `Detalhes de ${result.dados.nome || 'Pessoa'}`;
+        
+        // 2. Preenche o Formulário
         preencherFormulario(form, result.dados);
         
-        // Mantém desabilitado para modo 'Ver Detalhes'
-        disableForm(form, true); 
-
-        // Opcional: Adiciona um botão "Voltar" ou "Editar"
+        // 3. Adiciona botões de ação (Voltar e Editar)
         document.querySelector('h1').innerHTML += `
-            <a href="lista_clientes.html" class="btn btn-secondary ms-3"><i class="bi bi-arrow-left"></i> Voltar</a>
+            <a href="lista_clientes.html" class="btn btn-secondary ms-3"><i class="bi bi-arrow-left"></i> Voltar à Lista</a>
             <button class="btn btn-warning ms-2" onclick="iniciarEdicao('${documento}')"><i class="bi bi-pencil"></i> Editar</button>
         `;
 
     } else {
         document.querySelector('h1').textContent = 'Erro ao carregar detalhes';
-        alert(result.mensagem || 'Falha ao buscar detalhes da pessoa.');
+        alert(result.mensagem || 'Falha ao buscar detalhes da pessoa. Redirecionando...');
+        // Redireciona de volta para a lista em caso de erro
+        setTimeout(() => {
+             window.location.href = 'lista_clientes.html';
+        }, 3000);
     }
 }
 
@@ -331,23 +341,28 @@ async function carregarDetalhesPessoa() {
 function preencherFormulario(form, data) {
     for (const key in data) {
         if (data.hasOwnProperty(key)) {
-            const input = form.querySelector(`[name="${key}"]`);
+            // Cria uma chave limpa (igual ao Apps Script)
+            const cleanKey = key.toLowerCase().trim().replace(/[^a-z0-9]+/g, '');
+
+            // Procura o input pelo nome (usando a chave limpa)
+            const input = form.querySelector(`[name="${cleanKey}"]`);
+
             if (input) {
-                // Lógica de preenchimento para diferentes tipos de input (radio, checkbox, text)
                 if (input.type === 'radio') {
                     // Para radio buttons (ex: tipoPessoa, Masculino/Feminino)
-                    form.querySelectorAll(`[name="${key}"][value="${data[key]}"]`).forEach(radio => {
+                    form.querySelectorAll(`[name="${cleanKey}"][value="${data[key]}"]`).forEach(radio => {
                         radio.checked = true;
                     });
                 } else if (input.type === 'checkbox') {
                     // Para checkboxes (ex: tiposCadastro - Cliente, Fornecedor)
-                    const values = data[key].split(',').map(v => v.trim()); // Assume que são separados por vírgula
-                    form.querySelectorAll(`[name="${key}"]`).forEach(checkbox => {
-                        if (values.includes(checkbox.value)) {
+                    const values = String(data[key]).split(',').map(v => v.toString().trim()); // Garante que é string
+                    form.querySelectorAll(`[name="${cleanKey}"]`).forEach(checkbox => {
+                        if (values.includes(checkbox.value.toString())) {
                             checkbox.checked = true;
                         }
                     });
                 } else {
+                    // Para inputs de texto, data, etc.
                     input.value = data[key];
                 }
             }
@@ -357,19 +372,13 @@ function preencherFormulario(form, data) {
 
 /**
  * Função utilitária para desabilitar o formulário.
- * @param {HTMLFormElement} form - O elemento do formulário.
- * @param {boolean} disabled - True para desabilitar, false para habilitar.
  */
 function disableForm(form, disabled) {
-    const inputs = form.querySelectorAll('input, select, textarea, button');
+    const inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
-        // Deixa o botão de Voltar/Editar utilizável
-        if (input.onclick && (input.textContent.includes('Voltar') || input.textContent.includes('Editar'))) {
-            input.disabled = false;
-        } else {
-            input.disabled = disabled;
-        }
+        input.disabled = disabled;
     });
+
     // Esconde o botão Salvar/Cadastrar se estiver no modo 'Ver'
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) {
@@ -378,7 +387,8 @@ function disableForm(form, disabled) {
 }
 
 
-// Inicia o carregamento quando a página de detalhes for acessada
+// ** ROTEAMENTO/INICIALIZAÇÃO **
+// Verifica se estamos na página 'detalhes_pessoa.html' para carregar os dados
 if (window.location.pathname.endsWith('detalhes_pessoa.html')) {
     carregarDetalhesPessoa();
 }
