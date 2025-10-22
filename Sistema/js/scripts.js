@@ -250,3 +250,28 @@ async function carregarPessoas() {
 if (window.location.pathname.endsWith('lista_clientes.html') || document.getElementById('pessoasTableBody')) {
     carregarPessoas();
 }
+
+// -----------------------------------------------------------------
+// 6. PLACEHOLDERS PARA AÇÕES DA LISTAGEM (Futuro: CRUD - READ Detalhado, UPDATE e DELETE)
+// -----------------------------------------------------------------
+
+/**
+ * Função placeholder para visualizar os detalhes de uma pessoa.
+ * No futuro, irá redirecionar para uma página de visualização detalhada.
+ * @param {string} documento - O documento (CPF/CNPJ) da pessoa.
+ */
+function verDetalhes(documento) {
+    alert('Ação VER: Funcionalidade de visualização de detalhes em desenvolvimento. Documento: ' + documento);
+    // Próxima Etapa: Implementar a busca e exibição de detalhes.
+}
+
+/**
+ * Função placeholder para iniciar o processo de edição.
+ * No futuro, irá redirecionar para a página de cadastro/edição com os dados pré-preenchidos.
+ * @param {string} documento - O documento (CPF/CNPJ) da pessoa.
+ */
+function iniciarEdicao(documento) {
+    alert('Ação EDITAR: Funcionalidade de edição em desenvolvimento. Documento: ' + documento);
+    // Próxima Etapa: Implementar a lógica de preenchimento e update (CRUD-U).
+}
+
