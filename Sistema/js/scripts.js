@@ -142,3 +142,4 @@ if (document.getElementById('cadastroClienteForm')) {
         const tiposCadastro = Array.from(document.querySelectorAll('input[name="tipoCadastro"]:checked'))
 
 
+
