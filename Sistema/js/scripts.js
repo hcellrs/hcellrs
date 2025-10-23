@@ -140,3 +140,4 @@ if (document.getElementById('cadastroClienteForm')) {
 
         // 1. Coleta os Tipos de Cadastro marcados (Cliente, Fornecedor, etc.)
         const tiposCadastro = Array.from(document.querySelectorAll('input[name="tipoCadastro"]:checked'))
+
