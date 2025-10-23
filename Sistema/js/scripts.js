@@ -3,7 +3,7 @@
 // =================================================================
 
 // URL DA API DE QA GERADA PELO GOOGLE APPS SCRIPT (MANTENHA ESTA)
-const API_URL = "https://script.google.com/macros/s/AKfycbwOMTs3SsTRXvrN0aQipKLbaChad2KocwLAWyoUMZSWyV0xetn_646KnVdrrGuswzUhjQ/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbykjVOFT741sljV4tJh_F6WtWnXupvvB-wY2kNMYO23rN7kATl8RVZq-hbre0poJbI8iQ/exec";
 const LOGIN_TOKEN_KEY = 'hcell_auth_token';
 
 const LOGIN_PAGE_NAME = 'index.html'; 
@@ -140,4 +140,5 @@ if (document.getElementById('cadastroClienteForm')) {
 
         // 1. Coleta os Tipos de Cadastro marcados (Cliente, Fornecedor, etc.)
         const tiposCadastro = Array.from(document.querySelectorAll('input[name="tipoCadastro"]:checked'))
+
 
