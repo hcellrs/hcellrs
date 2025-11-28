@@ -8,39 +8,54 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background-color: #1c3d5a;
+            /* Mantendo a identidade visual do Login */
+            background-color: #1c3d5a; 
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 50px;
+            padding: 20px;
+            color: #333;
         }
-        .search-container {
-            max-width: 800px;
-            width: 90%;
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Card de Busca */
+        .search-card {
             background: white;
-            padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
         }
-        .result-card {
-            border-left: 5px solid #0d6efd;
-            background-color: #f8f9fa;
-            transition: transform 0.2s;
+
+        /* Estilização da Tabela de Resultados */
+        .results-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 400px;
         }
-        .result-card:hover {
-            transform: scale(1.01);
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f8ff;
+            cursor: pointer;
         }
-        .price-tag {
-            font-size: 1.5rem;
+
+        .price-badge {
+            background-color: #198754;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
             font-weight: bold;
-            color: #198754;
+            font-size: 0.9em;
         }
-        .nav-top {
-            width: 100%;
-            max-width: 800px;
+
+        /* Header simples */
+        .header-bar {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             color: white;
             margin-bottom: 20px;
         }
@@ -48,95 +63,147 @@
 </head>
 <body>
 
-    <div class="nav-top">
-        <h4><i class="bi bi-gear-fill"></i> HCELL System</h4>
-        <button onclick="window.location.href='index.html'" class="btn btn-outline-light btn-sm">Sair</button>
-    </div>
-
-    <div class="search-container">
-        <h3 class="text-center mb-4">Consulta Rápida de Peças</h3>
+    <div class="main-container">
         
-        <div class="input-group input-group-lg mb-4">
-            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-            <input type="text" id="searchInput" class="form-control" placeholder="Digite o modelo (ex: iPhone 11, A30...)" autocomplete="off">
+        <div class="header-bar">
+            <h3><i class="bi bi-gear-fill"></i> HCELL System</h3>
+            <div>
+                <span class="me-3"><i class="bi bi-person-circle"></i> Admin</span>
+                <a href="index.html" class="btn btn-outline-light btn-sm">Sair</a>
+            </div>
         </div>
 
-        <div id="resultsArea">
-            <p class="text-center text-muted mt-5">
-                <i class="bi bi-arrow-up-circle"></i> Digite acima para buscar valores.
+        <div class="search-card">
+            <h4 class="mb-3 text-primary"><i class="bi bi-search"></i> Consultar Peça</h4>
+            <div class="row g-2">
+                <div class="col-md-9">
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Digite o modelo... (Ex: iPhone 11, A10, Note 8)" autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100 btn-lg" onclick="filtrarDados()">Buscar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-card">
+            <div id="loading" class="text-center p-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Carregando tabela atualizada...</p>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Modelo</th>
+                            <th>Peça / Serviço</th>
+                            <th class="text-center">Valor</th>
+                            <th>Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaResultados">
+                        </tbody>
+                </table>
+            </div>
+            
+            <p id="noResults" class="text-center text-muted mt-5" style="display: none;">
+                Nenhum resultado encontrado para essa busca.
             </p>
         </div>
+
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
     <script>
-        // CONFIGURAÇÃO: COLE O LINK DO SEU CSV DO GOOGLE SHEETS AQUI
-        // Exemplo: 'https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv'
-        const SHEET_URL = 'SEU_LINK_DO_GOOGLE_SHEETS_AQUI'; 
+        // Variável global para segurar seus dados
+        let listaDePecas = [];
 
-        const searchInput = document.getElementById('searchInput');
-        const resultsArea = document.getElementById('resultsArea');
-        let database = []; // Armazenará os dados da planilha
-
-        // 1. Carrega os dados assim que a página abre
-        function carregarDados() {
-            if(SHEET_URL === 'SEU_LINK_DO_GOOGLE_SHEETS_AQUI') {
-                resultsArea.innerHTML = '<div class="alert alert-warning">Você precisa configurar o link da planilha no código!</div>';
-                return;
-            }
-
-            Papa.parse(SHEET_URL, {
-                download: true,
-                header: true, // Assume que a linha 1 é cabeçalho (Modelo, Peca, Valor)
-                complete: function(results) {
-                    database = results.data;
-                    console.log("Dados carregados:", database.length);
-                },
-                error: function(err) {
-                    resultsArea.innerHTML = '<div class="alert alert-danger">Erro ao carregar planilha. Verifique o link.</div>';
-                }
-            });
-        }
-
-        // 2. Função de Busca (Executa quando você digita)
-        searchInput.addEventListener('input', function(e) {
-            const termo = e.target.value.toLowerCase();
-            resultsArea.innerHTML = ''; // Limpa resultados anteriores
-
-            if (termo.length < 2) return; // Só busca se tiver 2+ letras
-
-            // Filtra a "database"
-            const resultados = database.filter(item => {
-                // Verifica se as colunas existem antes de buscar
-                const modelo = item['Modelo'] ? item['Modelo'].toLowerCase() : '';
-                return modelo.includes(termo);
-            });
-
-            if (resultados.length > 0) {
-                resultados.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'card p-3 mb-2 result-card';
-                    card.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">${item['Modelo'] || 'Modelo N/A'}</h5>
-                                <span class="text-muted">${item['Peça'] || item['Peca'] || 'Serviço'}</span>
-                            </div>
-                            <div class="price-tag">
-                                R$ ${item['Valor'] || '0,00'}
-                            </div>
-                        </div>
-                    `;
-                    resultsArea.appendChild(card);
-                });
-            } else {
-                resultsArea.innerHTML = '<div class="text-center text-muted mt-3">Nenhum produto encontrado.</div>';
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarSuaPlanilha();
         });
 
-        // Inicia o carregamento
-        carregarDados();
+        const searchInput = document.getElementById('searchInput');
+        
+        // Busca automática ao digitar (opcional)
+        searchInput.addEventListener('keyup', (e) => {
+            filtrarDados(e.target.value);
+        });
 
+        // ---------------------------------------------------------
+        // --- AQUI ENTRA A INTEGRAÇÃO COM SEU MÉTODO EXISTENTE ---
+        // ---------------------------------------------------------
+        
+        function carregarSuaPlanilha() {
+            // Mostra loading
+            document.getElementById('loading').style.display = 'block';
+
+            // *** SEU CÓDIGO ANTIGO VEM AQUI ***
+            // Se você já tem um link JSON ou CSV, coloque aqui.
+            // Exemplo genérico:
+            
+            const SEU_LINK = 'URL_DA_SUA_PLANILHA_OU_JSON';
+
+            // Simulação (apague isso e coloque sua lógica real de fetch)
+            // Se você usar o método do PapaParse que mencionei antes:
+            /*
+            Papa.parse(SEU_LINK, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    listaDePecas = results.data;
+                    document.getElementById('loading').style.display = 'none';
+                    filtrarDados(""); // Renderiza tudo inicial
+                }
+            });
+            */
+
+            // SIMULAÇÃO DE DADOS (Para você ver o visual funcionando agora)
+            setTimeout(() => {
+                listaDePecas = [
+                    { modelo: "iPhone 11", peca: "Tela Original", valor: "R$ 450,00", obs: "Garantia 3 meses" },
+                    { modelo: "iPhone 11", peca: "Bateria", valor: "R$ 250,00", obs: "Saúde 100%" },
+                    { modelo: "Samsung A51", peca: "Conector Carga", valor: "R$ 120,00", obs: "Solda" },
+                    { modelo: "Moto G8", peca: "Frontal", valor: "R$ 180,00", obs: "Incell" },
+                ];
+                document.getElementById('loading').style.display = 'none';
+                filtrarDados(""); 
+            }, 500);
+        }
+
+        // Função de Renderização
+        function filtrarDados(termo = "") {
+            const tbody = document.getElementById('tabelaResultados');
+            const noResults = document.getElementById('noResults');
+            const termoBusca = termo.toLowerCase() || document.getElementById('searchInput').value.toLowerCase();
+            
+            tbody.innerHTML = '';
+            
+            // Filtra
+            const filtrados = listaDePecas.filter(item => {
+                // Ajuste as chaves (item.modelo, item.peca) conforme sua planilha real
+                const textoLinha = (item.modelo + " " + item.peca).toLowerCase();
+                return textoLinha.includes(termoBusca);
+            });
+
+            // Renderiza
+            if (filtrados.length > 0) {
+                noResults.style.display = 'none';
+                filtrados.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="fw-bold text-primary">${item.modelo || '-'}</td>
+                        <td>${item.peca || '-'}</td>
+                        <td class="text-center"><span class="price-badge">${item.valor || 'R$ 0,00'}</span></td>
+                        <td><small class="text-muted">${item.obs || '-'}</small></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                noResults.style.display = 'block';
+            }
+        }
     </script>
 </body>
 </html>
