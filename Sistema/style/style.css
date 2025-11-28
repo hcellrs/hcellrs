@@ -1,1 +1,140 @@
 
+
+/* =================================== */
+/* LAYOUT GERAL E BACKGROUND
+/* =================================== */
+body {
+    overflow-x: hidden;
+    /* Cor de fundo da área de conteúdo (cinza bem claro) */
+    background-color: #f8f9fa; 
+}
+
+#wrapper {
+    display: flex;
+}
+
+/* =================================== */
+/* NOVA SIDEBAR (Tema SMART System Azul Sólido)
+/* =================================== */
+
+.sidebar-wrapper {
+    width: 260px; 
+    min-height: 100vh;
+    /* Cor Azul Sólida da Sidebar (Extraída da imagem de referência) */
+    background-color: #1c3d5a; 
+    
+    transition: margin 0.25s ease-out;
+    position: fixed; 
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Título da Sidebar */
+.sidebar-heading {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
+    background-color: #132b40; /* Fundo um pouco mais escuro para o cabeçalho */
+}
+.sidebar-heading .brand-text {
+    font-weight: 600;
+}
+
+/* Links do Menu */
+.list-group-item {
+    padding: 0.9rem 1.25rem;
+    border: none;
+    color: rgba(255, 255, 255, 0.85); 
+    background-color: transparent;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.list-group-item:hover {
+    color: #fff;
+    background-color: #132b40; /* Cor de fundo no hover (mais escuro que a sidebar) */
+    border-left: 4px solid #fff; /* Destaque branco no hover */
+    padding-left: calc(1.25rem - 4px);
+}
+
+/* Link Ativo (Página Atual) */
+.list-group-item.active {
+    color: #fff;
+    font-weight: 600;
+    background-color: #132b40; 
+    border-left: 4px solid #fff; 
+    padding-left: calc(1.25rem - 4px);
+}
+
+/* Sub-menu (Accordion) */
+.sub-menu .list-group-item {
+    padding-left: 3.0rem; 
+    font-size: 0.85rem;
+    background-color: #132b40; /* Cor do sub-menu igual ao ativo/hover */
+}
+
+.sub-menu .list-group-item:hover {
+    background-color: #2a5278; /* Fundo um pouco mais claro para o hover no sub-menu */
+}
+
+/* Seta do menu expansível */
+.icon-arrow {
+    transition: transform 0.2s ease;
+}
+a[aria-expanded="true"] .icon-arrow {
+    transform: rotate(180deg);
+}
+
+/* Link Sair */
+.list-group-item#logoutButton {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+.list-group-item#logoutButton:hover {
+    background-color: #dc3545; 
+    color: #fff;
+    border-left: none;
+    padding-left: 1.25rem;
+}
+
+
+/* =================================== */
+/* ÁREA DE CONTEÚDO
+/* =================================== */
+
+#page-content-wrapper {
+    width: 100%;
+    padding-left: 260px; 
+    transition: padding-left 0.25s ease-out;
+}
+
+/* Navbar Superior (Header) */
+#page-content-wrapper .navbar {
+    min-height: 60px;
+}
+/* Cor do botão de menu */
+#sidebarToggle {
+    background-color: #1c3d5a; /* Azul da sidebar */
+    border-color: #1c3d5a;
+}
+#sidebarToggle:hover {
+    background-color: #132b40; /* Azul escuro */
+    border-color: #132b40;
+}
+
+
+/* =================================== */
+/* RESPONSIVIDADE (Toggle)
+/* =================================== */
+
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        margin-left: -260px;
+    }
+    #wrapper.toggled .sidebar-wrapper {
+        margin-left: 0;
+    }
+    #page-content-wrapper {
+        padding-left: 0;
+    }
+}
