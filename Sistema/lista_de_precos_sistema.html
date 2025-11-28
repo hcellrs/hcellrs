@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HCELL - Consulta Rápida de Preços (Sistema)</title>
+	
+    <link rel="stylesheet" href="style2.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+	<script defer src="js/scripts.js"></script>     <script defer src="js/logic_precos.js"></script> </head>
+<body>
+    
+    <header>
+		<h1>Lista de Preços</h1>
+        <button id="logoutButton" class="btn btn-primary voltar">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+	</header>
+
+	<main class="container">
+        
+        <div style="margin-bottom: 20px;">
+            <div style="background-color: black; color: white; border-radius: 8px; padding: 5px 10px; font-size: 0.9em; display: inline-block; margin-bottom: 10px;">
+                HCELL - Acesso Interno
+            </div>
+            
+            <div style="text-align: center; font-weight: bold; font-size: 16px; color: #0d47a1; margin-top: 5px; margin-bottom: 15px;">
+                Consulte aqui
+            </div>
+        </div>
+
+        <div class="busca">
+			<input type="text" id="searchInput" placeholder="Digite o produto..." autofocus>
+			<button id="voiceBtn" title="Buscar por voz">🎤</button>
+		</div>
+
+		<div id="resultados">
+			<p class="sem-resultados">
+                <i class="fas fa-spinner fa-spin"></i> Carregando catálogos de todos os fornecedores...
+            </p>
+		</div>
+	</main>
+    
+    </body>
+</html>
