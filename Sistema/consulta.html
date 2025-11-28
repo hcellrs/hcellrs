@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCELL - Consulta de Preços</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #1c3d5a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+        .search-container {
+            max-width: 800px;
+            width: 90%;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .result-card {
+            border-left: 5px solid #0d6efd;
+            background-color: #f8f9fa;
+            transition: transform 0.2s;
+        }
+        .result-card:hover {
+            transform: scale(1.01);
+        }
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #198754;
+        }
+        .nav-top {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav-top">
+        <h4><i class="bi bi-gear-fill"></i> HCELL System</h4>
+        <button onclick="window.location.href='index.html'" class="btn btn-outline-light btn-sm">Sair</button>
+    </div>
+
+    <div class="search-container">
+        <h3 class="text-center mb-4">Consulta Rápida de Peças</h3>
+        
+        <div class="input-group input-group-lg mb-4">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Digite o modelo (ex: iPhone 11, A30...)" autocomplete="off">
+        </div>
+
+        <div id="resultsArea">
+            <p class="text-center text-muted mt-5">
+                <i class="bi bi-arrow-up-circle"></i> Digite acima para buscar valores.
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script>
+        // CONFIGURAÇÃO: COLE O LINK DO SEU CSV DO GOOGLE SHEETS AQUI
+        // Exemplo: 'https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv'
+        const SHEET_URL = 'SEU_LINK_DO_GOOGLE_SHEETS_AQUI'; 
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsArea = document.getElementById('resultsArea');
+        let database = []; // Armazenará os dados da planilha
+
+        // 1. Carrega os dados assim que a página abre
+        function carregarDados() {
+            if(SHEET_URL === 'SEU_LINK_DO_GOOGLE_SHEETS_AQUI') {
+                resultsArea.innerHTML = '<div class="alert alert-warning">Você precisa configurar o link da planilha no código!</div>';
+                return;
+            }
+
+            Papa.parse(SHEET_URL, {
+                download: true,
+                header: true, // Assume que a linha 1 é cabeçalho (Modelo, Peca, Valor)
+                complete: function(results) {
+                    database = results.data;
+                    console.log("Dados carregados:", database.length);
+                },
+                error: function(err) {
+                    resultsArea.innerHTML = '<div class="alert alert-danger">Erro ao carregar planilha. Verifique o link.</div>';
+                }
+            });
+        }
+
+        // 2. Função de Busca (Executa quando você digita)
+        searchInput.addEventListener('input', function(e) {
+            const termo = e.target.value.toLowerCase();
+            resultsArea.innerHTML = ''; // Limpa resultados anteriores
+
+            if (termo.length < 2) return; // Só busca se tiver 2+ letras
+
+            // Filtra a "database"
+            const resultados = database.filter(item => {
+                // Verifica se as colunas existem antes de buscar
+                const modelo = item['Modelo'] ? item['Modelo'].toLowerCase() : '';
+                return modelo.includes(termo);
+            });
+
+            if (resultados.length > 0) {
+                resultados.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card p-3 mb-2 result-card';
+                    card.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">${item['Modelo'] || 'Modelo N/A'}</h5>
+                                <span class="text-muted">${item['Peça'] || item['Peca'] || 'Serviço'}</span>
+                            </div>
+                            <div class="price-tag">
+                                R$ ${item['Valor'] || '0,00'}
+                            </div>
+                        </div>
+                    `;
+                    resultsArea.appendChild(card);
+                });
+            } else {
+                resultsArea.innerHTML = '<div class="text-center text-muted mt-3">Nenhum produto encontrado.</div>';
+            }
+        });
+
+        // Inicia o carregamento
+        carregarDados();
+
+    </script>
+</body>
+</html>
