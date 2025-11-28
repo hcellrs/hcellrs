@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 if(usuario && senha) {
                     // Sucesso: Redirecionar para a página de consulta
+                    // js/scripts.js (Trecho da validação)
+                            if(usuario === "admin" && senha === "1234") { // Validação provisória
+                            window.location.href = 'consulta.html'; 
+            }
                     // Vamos criar esse arquivo 'dashboard.html' ou 'consulta.php' a seguir
                     window.location.href = 'dashboard.html'; 
                 } else {
@@ -64,3 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
         btnLogin.disabled = false;
     }
 });
+
+// js/scripts.js (Trecho da validação)
+if(usuario === "admin" && senha === "1234") { // Validação provisória
+    window.location.href = 'consulta.html'; 
+}
