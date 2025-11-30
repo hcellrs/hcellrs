@@ -6,7 +6,7 @@
 const planilhas = {
 	// ⚠️ SUBSTITUA ESTE URL PELO LINK DA SUA PLANILHA CLIENTE EXPORTADA EM CSV PÚBLICO!
 	// O nome 'cliente' será exibido como fornecedor na busca.
-	cliente: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRCX7SYJFFUdD8QI3zPaq4QqSkzapv5y2R7KrXmqkYle-NqL_6n8bh9WatrzvhR_-aNW9jsj-Df2G-/pub?gid=0&single=true&output=csv"
+	cliente: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSbXYx0-LHvNIOmnRo4cXRzFtZgXQG50K9dU1fr7K3A-0SMwSo2xg1uPdiWn2areIf9kJRJoIMYfMuE/pub?gid=0&single=true&output=csv"
 };
 
 let produtos = []; // Lista unificada de todos os produtos
